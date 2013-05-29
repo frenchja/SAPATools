@@ -26,4 +26,4 @@ install_github(repo='SAPATools',username='frenchja',
 To Do
 -----
 
-1.  Dupe checking using RIDpage, choose 1st time.  Last entry from RID on second pass.
+- [ ] Dupe checking using RIDpage, choose 1st time.  Last entry from RID on second pass.
