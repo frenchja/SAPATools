@@ -1,0 +1,15 @@
+{
+    "contents" : "Package: SAPATools\nType: Package\nTitle: R Tools for use with the SAPA Project\nVersion: 0.1\nDate: 2013-05-29\nAuthor: Jason A. French <frenchja@u.northwestern.edu>\nMaintainer: Jason A. French <frenchja@u.northwestern.edu>\nDescription: More about what it does (maybe more than one line)\nDepends: R (>= 2.15.2), RMySQL\nLicense: GPL (>= 2)\nLazyLoad: yes",
+    "created" : 1369844424073.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2944375136",
+    "id" : "92DB94B9",
+    "lastKnownWriteTime" : 1369844542,
+    "path" : "~/Documents/SAPATools/DESCRIPTION",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "dcf"
+}
