@@ -14,18 +14,26 @@ check.location <- function() {
   # Check hostname and location
   if(Sys.getenv("HOSTNAME") != 'revelle.ci.northwestern.edu'){
     warning('This script is meant be run from the SAPA Project server!\n')
-    choice <- menu(choices=c('Yes','No'),
-                   title='Do you want to try tunneling over ssh?')
-    if(choice == 1) {
-      user <- readline(prompt='Enter your NetID: ')
-      cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
-                   user,'@revelle.ci.northwestern.edu',
-                   sep='')
-      system(cmd)
-    }
+    
+    switch(Sys.info()['sysname'],
+           Windows={
+             stop('Sorry!  Windows doesn\'t do SSH tunneling!')},
+           {choice <- menu(choices=c('Yes','No'),
+                           title='Do you want to try tunneling over ssh?')
+            if(choice == 1) {
+              user <- readline(prompt='Enter your NetID: ')
+              cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
+                           user,'@revelle.ci.northwestern.edu',
+                           sep='')
+              system(cmd)
+              return(TRUE)
+              } else {
+                stop('Cannot proceed!\n Either run this script from the server or input your NetID!')
+              }
+           } 
+    )
   } else {
-    stop('Cannot proceed!\n
-       Either run this script from the server or input your NetID!')
+    return(TRUE)
   }
 }
 
@@ -43,6 +51,14 @@ check.location <- function() {
 #        FUN=con.connect)
 
 sapa.db <- function(database,all=FALSE) {
+  # Establishes connect to SAPA MySQL database
+  #
+  # Args:
+  #   database: Choose the database to connect
+  #   all:      Connect to all databases?
+  #
+  # Returns: RMySQL connection
+  
   check.location()
   
   # Check if database argument passed
@@ -50,34 +66,33 @@ sapa.db <- function(database,all=FALSE) {
     database <- menu(choices=c('SAPAactive','SAPAcurrent','SAPAarchive'),
                      title='Choose which database to build: ')
   }
+  
   print(paste('Connecting to ',database))
+  
   # Connect to database
-  switch(database,
-         1={con.active <- dbConnect(MySQL(),
+  con <- switch(database,
+         {dbConnect(MySQL(),
                                     user="username",
                                     password="password",
                                     dbname="SAPAactive",
                                     host="127.0.0.1",
                                     port=3306)
-            con <- con.active
-            return(con)},
-         2={con.archive <- dbConnect(MySQL(),
+         },
+         {dbConnect(MySQL(),
                                      user="username",
                                      password="password",
                                      dbname="SAPAarchive",
                                      host="127.0.0.1",
                                      port=3306)
-            con <- con.archive
-            return(con)},
-         3={con.current <- dbConnect(MySQL(),
+         },
+         {dbConnect(MySQL(),
                                      user="username",
                                      password="password",
                                      dbname="SAPAcurrent",
                                      host="127.0.0.1",
                                      port=3306)
-            con <- con.current
-            return(con)})
-  # Add stop('Choose a database!')
+         })
+  return(con)
 }
 
 sapa.table <- function(sapa.table,con,all=FALSE) {
@@ -96,7 +111,7 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
     table.choice <- menu(choices=dbListTables(con),
                          title='Choose which table to convert to a data.frame: ')
   } else{
-    # Check that table argument is valid
+    # Check that sapa.table argument is valid
     tryCatch({
       is.element(el=table,set=dbListTables(con))
     },
@@ -124,7 +139,7 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
          1={write.table(x=table.name[1],
                         file=paste(table.name[1],Sys.Date,'.data',sep=''))
          },
-         2={warning('Data not saved to disk...')
+         2={warning('Data not saved to disk yet...')
          })
   return(paste(table.name[1]))
   on.exit(dbDisconnect(con))
@@ -150,8 +165,63 @@ clean.sapa <- function(x, max.age, min.age) {
   return(x)
 }
 
+get.sapa <- function(date,filename) {
+  # Get SAPA Project data
+  #
+  # Args:
+  #   date:   Minimum date cutoff (YYYY-MM-DD)
+  #
+  # Returns:  data.frame
+
+  # Check for date argument
+  if(hasArg(date)){
+    print(paste('Obtaining SAPA date from ',date))
+    date <- as.Date(date,format="%Y-%m-%d")
+  } else {
+    warning('No date supplied.  Using 05/20/2013!')
+    date <- as.Date('2013-5-20',format="%Y-%m-%d")
+  }
+  
+  # List of tables on SAPAactive
+  sapa.active.list <- c('TAIE_responses_052013','CAI_responses_052013',
+                         'emotion_responses_052013','health_responses_052013',
+                         'peer_responses_052013')
+  # Establish connection to SAPAactive
+  con.active <- sapa.db(database=con.active)
+  # Vectorize list of tables
+  lapply(X=sapa.active,
+         FUN=function(x){           
+           x <- sapa.table(sapa.table=x,con=con.active)
+         })
+  # Close db connetion
+  dbDisconnect(con.active)
+  
+  # Use different MySQL Table than SAPAactive if needed
+  if(date < as.Date('2013-5-20',format="%Y-%m-%d")) {
+    sapa.archive.list <- c('')
+    lapply(X=sapa.archive.list,
+           FUN=function(x){
+             
+           })
+  }
+  
+  data$time <- as.Date(data$time,format="%Y-%m-%d %H:%M:%S")
+  
+  if(hasArg(filename)){
+    print(paste('Writing SAPA to ',filename))
+    save(c(''),
+         file=filename)
+  } else {
+    warning('No filename supplied.  Outputting as object!')
+    
+  }
+}
+
 make.sapa <- function(file){
   # Builds the SAPA.rdata, scoring the IQ items.
+  #
+  # Args:
+  #   file: Specify filename output
   #
   # Returns:
   #   data.frame in the sapa.rdata file
@@ -170,6 +240,7 @@ make.sapa <- function(file){
            return(x)
          })
   
+  # Check file argument
   if(!hasArg(file)) {
     filename <- paste('sapa.',Sys.Date(),'.rdata',sep="")
   } else {
