@@ -1,9 +1,11 @@
 Package: SAPATools
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: R Tools for use with the SAPA Project
+Version: 0.1
 Date: 2013-05-29
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Author: Jason A. French <frenchja@u.northwestern.edu>
+Maintainer: Jason A. French <frenchja@u.northwestern.edu>
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Depends: R (>= 2.15.2), RMySQL
+License: GPL (>= 2)
+LazyLoad: yes
