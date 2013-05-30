@@ -14,12 +14,11 @@ check.location <- function() {
   # Check hostname and location
   if(Sys.getenv("HOSTNAME") != 'revelle.ci.northwestern.edu'){
     warning('This script is meant be run from the SAPA Project server!\n')
-    
     switch(Sys.info()['sysname'],
            Windows={
              stop('Sorry!  Windows doesn\'t do SSH tunneling!')},
            {choice <- menu(choices=c('Yes','No'),
-                           title='Do you want to try tunneling over ssh?')
+                           title='Do you want to try tunneling over SSH?')
             if(choice == 1) {
               user <- readline(prompt='Enter your NetID: ')
               cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
@@ -28,7 +27,7 @@ check.location <- function() {
               system(cmd)
               return(TRUE)
               } else {
-                stop('Cannot proceed!\n Either run this script from the server or input your NetID!')
+                stop('Cannot proceed!\n Either run this script from the server or tunneling over SSH!')
               }
            } 
     )
@@ -54,7 +53,7 @@ sapa.db <- function(database,all=FALSE) {
   # Establishes connect to SAPA MySQL database
   #
   # Args:
-  #   database: Choose the database to connect
+  #   database: Database to connect
   #   all:      Connect to all databases?
   #
   # Returns: RMySQL connection
@@ -120,7 +119,7 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
              error =  function(e) {
                warning('Invalid table choice!')
                # Choose Tables to export to R
-               table.choice <- menu(choices=dbListTables(con),
+               table.choice <- select.list(choices=dbListTables(con),
                                     title='Choose which table to convert to a data.frame: ')
              }
     )
@@ -129,6 +128,7 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
   
   # Check for active RMySQL connection
   if (!hasArg(con)) {
+    # Could use dbListConnections(MySQL())
     con <- sapa.db()
   }
   
@@ -138,10 +138,10 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
   table.write <- menu(choices=c('Yes','No'),
                       title='Would you like to save your table to disk?')
   switch(table.write,
-         1={write.table(x=table.name[1],
+         {write.table(x=table.name[1],
                         file=paste(table.name[1],Sys.Date,'.data',sep=''))
          },
-         2={warning('Data not saved to disk yet...')
+         {warning('Data not saved to disk yet...')
          })
   return(paste(table.name[1]))
   on.exit(dbDisconnect(con))
@@ -190,12 +190,14 @@ get.sapa <- function(date,filename) {
                          'peer_responses_052013')
   # Establish connection to SAPAactive
   con.active <- sapa.db(database=SAPAactive)
+  
+  list.of.data.frames <- as.list(sapa.active.list)
   # Vectorize list of tables
   lapply(X=sapa.active,
          FUN=function(x){           
            x <- sapa.table(sapa.table=x,con=con.active)
          })
-  # Close db connetion
+  # Close db connection
   dbDisconnect(con.active)
   
   # Use different MySQL Table than SAPAactive if needed
@@ -203,19 +205,26 @@ get.sapa <- function(date,filename) {
     sapa.archive.list <- c('')
     lapply(X=sapa.archive.list,
            FUN=function(x){
-             
+            x <- sapa.table(sapa.table=x,con=con.archive)
+            list.of.data.frames <- c(list.of.data.frames,x)
            })
+    # Close db connection
+    dbDisconnect(con.archive)
   }
   
   data$time <- as.Date(data$time,format="%Y-%m-%d %H:%M:%S")
   
+  merged.data.frame = Reduce(function(...) merge(..., all=T,by="RID"), list.of.data.frames)
+  
+  # Save .rdata if argument passed
   if(hasArg(filename)){
     print(paste('Writing SAPA to ',filename))
-    save(c(''),
+    save(merged.data.frame,
          file=filename)
   } else {
     warning('No filename supplied.  Outputting as object!')
   }
+  return(merged.data.frame)
 }
 
 make.sapa <- function(file){
