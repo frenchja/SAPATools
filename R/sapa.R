@@ -12,7 +12,7 @@ if (!require(RMySQL)) {
 
 check.location <- function() {
   # Check hostname and location
-  if(Sys.getenv("HOSTNAME") != 'revelle.ci.northwestern.edu'){
+  if(system('hostname', intern=TRUE) != 'revelle.ci.northwestern.edu'){
     warning('This script is meant be run from the SAPA Project server!\n')
     switch(Sys.info()['sysname'],
            Windows={
