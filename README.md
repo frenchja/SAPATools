@@ -36,3 +36,4 @@ To Do
 -----
 - [ ] Dupe checking using RIDpage, choose 1st time.  Last entry from RID on second pass.
 - [x] Port over clean.sapa() function from HTTP scraping.
+- [ ] Evaluate objects in memory for RMySQL connections.
