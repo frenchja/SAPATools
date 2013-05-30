@@ -1,0 +1,16 @@
+bibentry("Manual",
+   title = "SAPA Tools: A Package for use with the SAPA Project.",
+   author = person("Jason A. French"),
+   organization = "Northwestern University",
+   address      = "Evanston, IL",
+   year   = version$year,
+   url    = "http://www.sapa-project.org",
+
+   mheader = "To cite SAPA Tools in publications use:",
+
+   mfooter = 
+     paste("We have invested a lot of time and effort in creating SAPA Tools,",
+      "please cite it when using it for data analysis.",
+      "See also", sQuote("citation(\"pkgname\")"),
+      "for citing R packages.", sep = " ")
+)
