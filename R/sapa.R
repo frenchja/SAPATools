@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# Author:   Jason A. French
+# Author:   Jason A. French & David M. Condon
 # Email:    frenchja@u.northwestern.edu
 # SAPA:     http://sapa-project.org
 
@@ -200,7 +200,7 @@ get.sapa <- function(date,filename) {
   # Close db connection
   dbDisconnect(con.active)
   
-  # Use different MySQL Table than SAPAactive if needed
+  # Use different MySQL database than SAPAactive if needed
   if(date < as.Date('2013-5-20',format="%Y-%m-%d")) {
     sapa.archive.list <- c('')
     lapply(X=sapa.archive.list,
