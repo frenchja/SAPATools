@@ -63,29 +63,30 @@ sapa.db <- function(database,all=FALSE) {
   
   # Check if database argument passed
   if (!hasArg(database)) {
-    database <- menu(choices=c('SAPAactive','SAPAcurrent','SAPAarchive'),
-                     title='Choose which database to build: ')
+    database <- select.list(choices=c('SAPAactive','SAPAcurrent','SAPAarchive'),
+                            title='Choose which database to build: ',
+                            multiple=FALSE)
   }
   
-  print(paste('Connecting to ',database))
+  print(paste('Connecting to',database))
   
   # Connect to database
   con <- switch(database,
-         {dbConnect(MySQL(),
+         'SAPAactive'={dbConnect(MySQL(),
                                     user="username",
                                     password="password",
                                     dbname="SAPAactive",
                                     host="127.0.0.1",
                                     port=3306)
          },
-         {dbConnect(MySQL(),
+         'SAPAarchive'={dbConnect(MySQL(),
                                      user="username",
                                      password="password",
                                      dbname="SAPAarchive",
                                      host="127.0.0.1",
                                      port=3306)
          },
-         {dbConnect(MySQL(),
+         'SAPAcurrent'={dbConnect(MySQL(),
                                      user="username",
                                      password="password",
                                      dbname="SAPAcurrent",
@@ -108,8 +109,9 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
   # Check if table argument passed
   if (length(sapa.table) < 1) {
     # Choose Tables to export to R
-    table.choice <- menu(choices=dbListTables(con),
-                         title='Choose which table to convert to a data.frame: ')
+    table.choice <- select.list(choices=dbListTables(con),
+                                title='Choose which table to convert to a data.frame: ',
+                                multiple=TRUE)
   } else{
     # Check that sapa.table argument is valid
     tryCatch({
@@ -187,7 +189,7 @@ get.sapa <- function(date,filename) {
                          'emotion_responses_052013','health_responses_052013',
                          'peer_responses_052013')
   # Establish connection to SAPAactive
-  con.active <- sapa.db(database=con.active)
+  con.active <- sapa.db(database=SAPAactive)
   # Vectorize list of tables
   lapply(X=sapa.active,
          FUN=function(x){           
@@ -213,7 +215,6 @@ get.sapa <- function(date,filename) {
          file=filename)
   } else {
     warning('No filename supplied.  Outputting as object!')
-    
   }
 }
 
