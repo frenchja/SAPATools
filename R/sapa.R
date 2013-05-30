@@ -152,7 +152,7 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
   on.exit(dbDisconnect(con))
 }
 
-clean.sapa <- function(x, max.age, min.age) {
+clean.sapa <- function(x, max.age=91, min.age=13) {
   # Returns data.frame of unique participants
   #
   # Args:
@@ -160,17 +160,23 @@ clean.sapa <- function(x, max.age, min.age) {
   #   max.age:      Max age to allow
   #   min.age:      Min age to allow
   
-  dupli <- duplicated(x[,"RID"])+0
-  x <- x[dupli==0,]
+  # Take first RIDpage entry if duplicates
+  x <- x[!duplicated(x[,'RIDpage']),]
+  # Take last RID entry (i.e., latest page) if duplicates
+  x <- x[!duplicated(x[,'RID'],fromLast=TRUE),]
   
-  
+  # Another approach using tapply() and $time
+  # indices <- tapply(seq_along(time), pid, function(x) { x[which.max(time[x])] })
+  # indices <- tapply(seq_along(x$time),
+  #                  x$RIDpage,
+  #                  FUN=function(x) { x[which.max(sapa.jason$time[x])] })
+
+  # Scrub page ages
   if (missing(min.age))
     min.age <- 13
   if (missing(max.age))
     max.age <- 91
-  x <- subset(x, x[,"age"]>min.age)
-  x <- subset(x, x[,"age"]<max.age)
-  x <- subset(x, x[,"no_code"]<1)
+  x <- x[which(x$age > min.age & x$age<max.age & x$no_code<1),]
   return(x)
 }
 
