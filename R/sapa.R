@@ -180,7 +180,7 @@ clean.sapa <- function(x, max.age=91, min.age=13) {
   return(x)
 }
 
-get.sapa <- function(date,filename) {
+get.sapa <- function(date='2013-05-20',filename) {
   # Get SAPA Project data
   #
   # Args:
