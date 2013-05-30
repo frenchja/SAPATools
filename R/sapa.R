@@ -67,6 +67,11 @@ sapa.db <- function(database,all=FALSE) {
                             multiple=FALSE)
   }
   
+  # Check that database argument is character string
+  if (!is.character(database)) {
+    database <- toString(database)
+  }
+  
   print(paste('Connecting to',database))
   
   # Connect to database
@@ -106,7 +111,7 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
   # Returns:  R data.frame
   
   # Check if table argument passed
-  if (length(sapa.table) < 1) {
+  if (!hasArg(sapa.table)) {
     # Choose Tables to export to R
     table.choice <- select.list(choices=dbListTables(con),
                                 title='Choose which table to convert to a data.frame: ',
@@ -117,13 +122,13 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
       is.element(el=table,set=dbListTables(con))
     },
              error =  function(e) {
-               warning('Invalid table choice!')
+               warning('Invalid table choice!',immediate.=TRUE)
                # Choose Tables to export to R
                table.choice <- select.list(choices=dbListTables(con),
                                     title='Choose which table to convert to a data.frame: ')
              }
     )
-    table.choice <- sapa.table
+    table.choice <- toString(sapa.table)
   }
   
   # Check for active RMySQL connection
@@ -133,7 +138,7 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
   }
   
   table.name <- readline(prompt='Choose a name for your table in R: ')
-  paste(table.name[1]) <- dbReadTable(con,name=dbListTables(con)[table.choice])
+  sapa.table <- dbReadTable(conn=con,name=table.choice)
   
   table.write <- menu(choices=c('Yes','No'),
                       title='Would you like to save your table to disk?')
@@ -143,7 +148,7 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
          },
          {warning('Data not saved to disk yet...')
          })
-  return(paste(table.name[1]))
+  return(sapa.table)
   on.exit(dbDisconnect(con))
 }
 
@@ -151,12 +156,14 @@ clean.sapa <- function(x, max.age, min.age) {
   # Returns data.frame of unique participants
   #
   # Args:
-  #   x:  SAPA data.frame from sapa.table()
-  #   max.age:  Max age to allow
-  #   min.age:  Min age to allow
+  #   x:            SAPA data.frame from sapa.table()
+  #   max.age:      Max age to allow
+  #   min.age:      Min age to allow
   
   dupli <- duplicated(x[,"RID"])+0
   x <- x[dupli==0,]
+  
+  
   if (missing(min.age))
     min.age <- 13
   if (missing(max.age))
