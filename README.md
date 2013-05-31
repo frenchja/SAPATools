@@ -38,4 +38,5 @@ To Do
 - [x] Port over clean.sapa() function from HTTP scraping.
 - [ ] Evaluate objects in memory for RMySQL connections.
 - [ ] Look into encrypting SQL passwords.
-- [ ] Avoid auto-installing `RMySQL`.
+- [X] Avoid auto-installing `RMySQL`.
+- [ ] Use `data.tables` package for speed.
