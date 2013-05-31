@@ -5,9 +5,7 @@
 
 # Check packages
 if (!require(RMySQL)) {
-    warning('RMySQL not found. Attempting to install!')
-    install.packages('RMySQL',dependencies=TRUE)
-    require(RMySQL,character.only=TRUE)
+    stop('RMySQL not found. Please install!')
 }
 
 check.location <- function() {
