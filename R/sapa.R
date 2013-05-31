@@ -102,15 +102,22 @@ sapa.db <- function(database,all=FALSE) {
   return(con)
 }
 
-sapa.table <- function(table.name,con,all=FALSE) {
+sapa.table <- function(table.name,con,write=TRUE) {
   # Imports a SAPA table from MySQL into R
   #
   # Args:
-  #   table.name:  MySQL table name
-  #   all:    Import all tables into R
-  #   con:    RMySQL connection
+  #   table.name: MySQL table name
+  #   write:      Write table to disk
+  #   con:        RMySQL connection
   #
   # Returns:  R data.frame
+  
+  # Check for active RMySQL connection
+  if (!hasArg(con)) {
+    message('RMySQL connection not specified. Calling sapa.db() for you.')
+    # Could use dbListConnections(MySQL())
+    con <- sapa.db()
+  }
   
   # Check if table argument passed
   if (!hasArg(table.name)) {
@@ -121,7 +128,7 @@ sapa.table <- function(table.name,con,all=FALSE) {
   } else{
     # Check that sapa.table argument is valid
     tryCatch({
-      is.element(el=table,set=dbListTables(con))
+      is.element(el=as.character(table.name),set=dbListTables(con))
     },
              error =  function(e) {
                warning('Invalid table choice!',immediate.=TRUE)
@@ -133,24 +140,17 @@ sapa.table <- function(table.name,con,all=FALSE) {
     table.choice <- toString(table.name)
   }
   
-  # Check for active RMySQL connection
-  if (!hasArg(con)) {
-    message('RMySQL connection not specified. Calling sapa.db() for you.')
-    # Could use dbListConnections(MySQL())
-    con <- sapa.db()
+  if (write == TRUE) {
+    write.name <- readline(prompt='Choose a name for your table in R: ')
+    table.write <- menu(choices=c('Yes','No'),
+                        title='Would you like to save your table to disk?')
+    switch(table.write,
+           {write.table(x=table.name[1],
+                        file=paste(write.name,Sys.Date,'.data',sep=''))},
+           {warning('Data not saved to disk yet...')})
   }
-  
-  write.name <- readline(prompt='Choose a name for your table in R: ')
+
   data <- dbReadTable(conn=con,name=table.choice)
-  
-  table.write <- menu(choices=c('Yes','No'),
-                      title='Would you like to save your table to disk?')
-  switch(table.write,
-         {write.table(x=table.name[1],
-                        file=paste(write.name,Sys.Date,'.data',sep=''))
-         },
-         {warning('Data not saved to disk yet...')
-         })
   return(data)
   on.exit(dbDisconnect(con))
 }
@@ -210,14 +210,12 @@ get.sapa <- function(date='2013-05-20',filename) {
                          'emotion_responses_052013','health_responses_052013',
                          'peer_responses_052013')
   # Establish connection to SAPAactive
-  con.active <- sapa.db(database=SAPAactive)
+  con.active <- sapa.db(database='SAPAactive')
   
-  list.of.data.frames <- as.list(sapa.active.list)
-  # Vectorize list of tables
-  lapply(X=sapa.active,
-         FUN=function(x){           
-           x <- sapa.table(sapa.table=x,con=con.active)
-         })
+  sapply(sapa.active.list,
+         function(x){
+           x <- sapa.table(table.name=as.character(x),con=con.active)},simplify=FALSE)
+  
   # Close db connection
   dbDisconnect(con.active)
   
@@ -235,11 +233,12 @@ get.sapa <- function(date='2013-05-20',filename) {
                            'iq_responses_071712', 'iq_responses_080812',        
                            'iq_responses_083112', 'iq_responses_100312', 'ws_responses_011112',
                            'ws_responses_071712')
-    lapply(X=sapa.archive.list,
-           FUN=function(x){
-            x <- sapa.table(sapa.table=x,con=con.archive)
-            list.of.data.frames <- c(list.of.data.frames,x)
-           })
+    # Establish connection to SAPAactive
+    con.archive <- sapa.db(database='SAPAarchive')
+    sapply(X=sapa.archive.list,
+           function(x){
+             x <- sapa.table(table.name=as.character(x),con=con.archive)},simplify=FALSE)
+    data.frame.list <- c(sapa.active.list,sapa.archive.list)
     # Close db connection
     dbDisconnect(con.archive)
   }
