@@ -40,3 +40,4 @@ To Do
 - [ ] Look into encrypting SQL passwords.
 - [X] Avoid auto-installing `RMySQL`.
 - [ ] Use `data.tables` package for speed.
+- [ ] Check filename basename and directory valid.
