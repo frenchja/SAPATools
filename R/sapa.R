@@ -244,22 +244,25 @@ get.sapa <- function(date='2013-05-20',filename) {
     dbDisconnect(con.archive)
   }
   
-  data$time <- as.Date(data$time,format="%Y-%m-%d %H:%M:%S")
-  
   merged.data.frame = Reduce(function(...) merge(..., all=T,by="RID"), list.of.data.frames)
+  merged.data.frame$time <- as.Date(merged.data.frame$time,format="%Y-%m-%d %H:%M:%S")
+  
+  merged.data.frame <- clean.sapa(x=merged.data.frame,
+                                  max.age=91,
+                                  min.age=13)
   
   # Save .rdata if argument passed
   if(hasArg(filename)){
     print(paste('Writing SAPA to ',filename))
     save(merged.data.frame,
-         file=filename)
+         file=paste(filename,Sys.Date,'.Rdata',sep=''))
   } else {
     warning('No filename supplied.  Outputting as object!')
   }
   return(merged.data.frame)
 }
 
-make.sapa <- function(file){
+make.sapa <- function(filename){
   # Builds the SAPA.rdata, scoring the IQ items.
   #
   # Args:
@@ -268,23 +271,32 @@ make.sapa <- function(file){
   # Returns:
   #   data.frame in the sapa.rdata file
   
-  # Begin with SAPA Archive SQL table
-  con.archive <- sapa.db(database='SAPAarchive')
+  data <- get.sapa(date='2011-05-20')
   
-  # List of IQ Tables to pass to lapply()
-  iq.tables <- c('iq_responses_011112','iq_responses_012213','iq_responses_050511',
-                 'iq_responses_052611','')
+  # Remove Bad IQ Participants
+  # Do some last.iq <- grep() to find last iq_ variable in big.kahuna
+  bad.iq <- rowSums(data[,c((which(colnames(data)=="ACT")+1):last.iq)],
+                    na.rm=TRUE)
+  data <- data[bad.iq>0,]
   
-  # Vectorize the tables
-  lapply(X=iq.tables,
-         FUN=function(x){
-           x <- sapa.table(sapa.table=x,con=con.archive)
-           return(x)
-         })
+  # Scrub responses to change all zero values to ‘NA’.
+#   iq.a <- scrub(iq.a, where = c("relstatus", "ethnic"), isvalue = 0)
+#   iq.a <- scrub(iq.a, where = c((which(colnames(iq.a)=="SATV")):ncol(iq.a)),
+#                 isvalue = 0)
+#   iq.a <- scrub(iq.a, where="p1occ", isvalue=c(98, 99), newvalue=c(0))
+#   iq.a <- scrub(iq.a, where="p2occ", isvalue=c(97, 98, 99), newvalue=c(0))
+#   iq.a <- scrub(iq.a, where="gender", isvalue=c(1), newvalue=c(0))
+#   iq.a <- scrub(iq.a, where="gender", isvalue=c(2), newvalue=c(1))
+#   iq.a <- scrub(iq.a, where="relstatus", isvalue=c(1), newvalue=c(0))
+#   iq.a <- scrub(iq.a, where="relstatus", isvalue=c(2), newvalue=c(1))
+#   iq.a <- scrub(iq.a, where="state", isvalue=c(0))
+#   iq.a <- scrub(iq.a, where="status", isvalue=c(99))
+#   iq.a <- scrub(iq.a, where="p2edu", isvalue=c(999))
+#   iq <- subset(iq.a, select=-c(participant_number, no_code))
   
   # Check file argument
-  if(!hasArg(file)) {
-    filename <- paste('sapa.',Sys.Date(),'.rdata',sep="")
+  if(!hasArg(filename)) {
+    filename <- paste('BigKahuna.',Sys.Date(),'.rdata',sep="")
   } else {
     filename <- file
   }
