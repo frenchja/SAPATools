@@ -11,21 +11,22 @@ if (!require(RMySQL)) {
 check.location <- function() {
   # Check hostname and location
   if(system('hostname', intern=TRUE) != 'revelle.ci.northwestern.edu'){
-    warning('This script is meant be run from the SAPA Project server!\n')
+    warning('This script is meant be run from the SAPA Project server!\n',
+            immediate.=TRUE)
     switch(Sys.info()['sysname'],
            Windows={
              stop('Sorry!  Windows doesn\'t do SSH tunneling!')},
            {choice <- menu(choices=c('Yes','No'),
                            title='Do you want to try tunneling over SSH?')
-            if(choice == 1) {
+            if(choice == 1 & nchar(Sys.which('ssh')) > 0) {
               user <- readline(prompt='Enter your NetID: ')
               cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
                            user,'@revelle.ci.northwestern.edu',
                            sep='')
-              system(cmd)
+              system(cmd) # wait=TRUE?
               return(TRUE)
               } else {
-                stop('Cannot proceed!\n Either run this script from the server or tunneling over SSH!')
+                stop('Cannot proceed!\n Either run this script from the server or tunnel using SSH!')
               }
            } 
     )
