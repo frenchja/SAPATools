@@ -19,6 +19,7 @@ check.location <- function() {
            {choice <- menu(choices=c('Yes','No'),
                            title='Do you want to try tunneling over SSH?')
             if(choice == 1 & nchar(Sys.which('ssh')) > 0) {
+              message(paste('SSH located at ',Sys.which('ssh'),'. Connecting.', sep=''))
               user <- readline(prompt='Enter your NetID: ')
               cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
                            user,'@revelle.ci.northwestern.edu',
@@ -26,7 +27,7 @@ check.location <- function() {
               system(cmd) # wait=TRUE?
               return(TRUE)
               } else {
-                stop('Cannot proceed!\n Either run this script from the server or tunnel using SSH!')
+                stop('Cannot proceed! Either run this script from the server or tunnel using SSH!')
               }
            } 
     )
@@ -62,12 +63,14 @@ sapa.db <- function(database,all=FALSE) {
   # Check if database argument passed
   if (!hasArg(database)) {
     database <- select.list(choices=c('SAPAactive','SAPAcurrent','SAPAarchive'),
-                            title='Choose which database to build: ',
+                            title='Choose the database to connect: ',
                             multiple=FALSE)
   }
   
   # Check that database argument is character string
   if (!is.character(database)) {
+    warning('Something is wrong with your database argument. Attempting to convert it to a string!',
+            immediate.=TRUE)
     database <- toString(database)
   }
   
@@ -99,18 +102,18 @@ sapa.db <- function(database,all=FALSE) {
   return(con)
 }
 
-sapa.table <- function(sapa.table,con,all=FALSE) {
+sapa.table <- function(table.name,con,all=FALSE) {
   # Imports a SAPA table from MySQL into R
   #
   # Args:
-  #   table:  MySQL table name
+  #   table.name:  MySQL table name
   #   all:    Import all tables into R
   #   con:    RMySQL connection
   #
   # Returns:  R data.frame
   
   # Check if table argument passed
-  if (!hasArg(sapa.table)) {
+  if (!hasArg(table.name)) {
     # Choose Tables to export to R
     table.choice <- select.list(choices=dbListTables(con),
                                 title='Choose which table to convert to a data.frame: ',
@@ -127,27 +130,28 @@ sapa.table <- function(sapa.table,con,all=FALSE) {
                                     title='Choose which table to convert to a data.frame: ')
              }
     )
-    table.choice <- toString(sapa.table)
+    table.choice <- toString(table.name)
   }
   
   # Check for active RMySQL connection
   if (!hasArg(con)) {
+    message('RMySQL connection not specified. Calling sapa.db() for you.')
     # Could use dbListConnections(MySQL())
     con <- sapa.db()
   }
   
-  table.name <- readline(prompt='Choose a name for your table in R: ')
-  sapa.table <- dbReadTable(conn=con,name=table.choice)
+  write.name <- readline(prompt='Choose a name for your table in R: ')
+  data <- dbReadTable(conn=con,name=table.choice)
   
   table.write <- menu(choices=c('Yes','No'),
                       title='Would you like to save your table to disk?')
   switch(table.write,
          {write.table(x=table.name[1],
-                        file=paste(table.name[1],Sys.Date,'.data',sep=''))
+                        file=paste(write.name,Sys.Date,'.data',sep=''))
          },
          {warning('Data not saved to disk yet...')
          })
-  return(sapa.table)
+  return(data)
   on.exit(dbDisconnect(con))
 }
 
@@ -164,16 +168,21 @@ clean.sapa <- function(x, max.age=91, min.age=13) {
   # Take last RID entry (i.e., latest page) if duplicates
   x <- x[!duplicated(x[,'RID'],fromLast=TRUE),]
   
-  # Another approach using tapply() and $time
+  # Approach 2:  Suggested by Winston Chang
+  # dat2 <- dat[order(dat$PID, dat$time),] or dat2 <- dat[order(dat$PID, dat$Page),]
+  # lastPID <- !rev(duplicated(rev(dat2$PID)))
+  # dat2[lastPID,]
+  
+  # Approach 3:  Using tapply() and $time
   # indices <- tapply(seq_along(time), pid, function(x) { x[which.max(time[x])] })
   # indices <- tapply(seq_along(x$time),
   #                  x$RIDpage,
   #                  FUN=function(x) { x[which.max(sapa.jason$time[x])] })
 
   # Scrub page ages
-  if (missing(min.age))
+  if (missing(min.age) | is.null(min.age))
     min.age <- 13
-  if (missing(max.age))
+  if (missing(max.age) | is.null(max.age))
     max.age <- 91
   x <- x[which(x$age > min.age & x$age<max.age & x$no_code<1),]
   return(x)
@@ -214,7 +223,18 @@ get.sapa <- function(date='2013-05-20',filename) {
   
   # Use different MySQL database than SAPAactive if needed
   if(date < as.Date('2013-5-20',format="%Y-%m-%d")) {
-    sapa.archive.list <- c('')
+    sapa.archive.list <- c('b5_responses_011112', 'b5_responses_012513', 'b5_responses_071712',
+                           'b5_responses_100312', 'exp_responses_011111', 'exp_responses_011112',
+                           'exp_responses_012213', 'exp_responses_052011', 'exp_responses_070111',
+                           'exp_responses_071712', 'exp_responses_081612', 'exp_responses_081810',
+                           'exp_responses_090512', 'exp_responses_090611open', 'exp_responses_090611orvis',
+                           'exp_responses_090611other', 'exp_responses_092010a', 'exp_responses_092010b',
+                           'exp_responses_092010c', 'exp_responses_100312', 'exp_responses_101812',
+                           'exp_responses_111811', 'iq_responses_011112', 'iq_responses_012213',
+                           'iq_responses_050511', 'iq_responses_052611', 'iq_responses_06',            
+                           'iq_responses_071712', 'iq_responses_080812',        
+                           'iq_responses_083112', 'iq_responses_100312', 'ws_responses_011112',
+                           'ws_responses_071712')
     lapply(X=sapa.archive.list,
            FUN=function(x){
             x <- sapa.table(sapa.table=x,con=con.archive)
