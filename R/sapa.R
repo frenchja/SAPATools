@@ -212,8 +212,8 @@ get.sapa <- function(date='2013-05-20',filename) {
   # Establish connection to SAPAactive
   con.active <- sapa.db(database='SAPAactive')
   
-  sapa.active <- sapply(sapa.active.list,function(x){
-    sapa.table(table.name=as.character(x),con=con.active,write=FALSE)},simplify=FALSE)
+  sapply(sapa.active.list,function(x){
+     sapa.table(table.name=as.character(x),con=con.active,write=FALSE)},simplify=FALSE)
   
   # Close db connection
   dbDisconnect(con.active)
@@ -241,8 +241,13 @@ get.sapa <- function(date='2013-05-20',filename) {
     dbDisconnect(con.archive)
   }
   
-  merged.data.frame = Reduce(function(...) merge(..., all=T,by="RID"), data.frame.list)
+  # Fix sapa.active.list by adding sapa.active$
+  sapa.active.list <- sapply(sapa.active.list,function(x){as.character(paste('sapa.active$',x,sep=''))},simplify=FALSE)
+  
+  merged.data.frame = Reduce(function(...) merge(..., all=T,by="RID"), sapa.active.list)
   merged.data.frame$time <- as.Date(merged.data.frame$time,format="%Y-%m-%d %H:%M:%S")
+  
+  # Reduce(function(t,t1){merge(f(t1),t,all=TRUE,by="x")}, c("a","b","c","d"), data.frame(x=integer()))
   
   merged.data.frame <- clean.sapa(x=merged.data.frame,
                                   max.age=91,
