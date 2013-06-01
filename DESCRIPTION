@@ -3,10 +3,18 @@ Type: Package
 Title: R Tools for use with the SAPA Project
 Version: 0.1
 Date: 2013-05-29
-Author: Jason A. French <frenchja@u.northwestern.edu>
+Authors@R: c(
+    person("Jason", "A.", "French",
+    email = "frenchja@u.northwestern.edu", role = c("aut", "cre")),
+    person("David", "M.", Condon", role = "aut"))
 Maintainer: Jason A. French <frenchja@u.northwestern.edu>
 Description: More about what it does (maybe more than one line)
 Depends: R (>= 2.15.2), RMySQL
+Imports:
+  RMySQL
+Suggests:
+  data.table,
+  doMC
 License: GPL (>= 2)
 LazyLoad: yes
 URL: http://www.sapa-project.org/ 
