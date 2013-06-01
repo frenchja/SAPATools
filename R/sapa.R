@@ -141,9 +141,9 @@ sapa.table <- function(table.name,con,write=TRUE) {
   }
   
   if (write == TRUE) {
-    write.name <- readline(prompt='Choose a name for your table in R: ')
     table.write <- menu(choices=c('Yes','No'),
                         title='Would you like to save your table to disk?')
+    write.name <- readline(prompt='Choose a name for your table in R: ')
     switch(table.write,
            {write.table(x=table.name[1],
                         file=paste(write.name,Sys.Date,'.data',sep=''))},
@@ -192,7 +192,8 @@ get.sapa <- function(date='2013-05-20',filename) {
   # Get SAPA Project data
   #
   # Args:
-  #   date:   Minimum date cutoff (YYYY-MM-DD)
+  #   date:     Minimum date cutoff (YYYY-MM-DD)
+  #   filename: Filename used to write data.frame
   #
   # Returns:  data.frame
 
@@ -212,8 +213,10 @@ get.sapa <- function(date='2013-05-20',filename) {
   # Establish connection to SAPAactive
   con.active <- sapa.db(database='SAPAactive')
   
-  sapply(sapa.active.list,function(x){
-     sapa.table(table.name=as.character(x),con=con.active,write=FALSE)},simplify=FALSE)
+  sapa.active <- sapply(sapa.active.list,function(x){
+     y <- sapa.table(table.name=as.character(x),con=con.active,write=FALSE)
+     assign(paste(x),y,envir = .GlobalEnv) # Test w/o GlobalEnv
+     },simplify=FALSE)
   
   # Close db connection
   dbDisconnect(con.active)
@@ -235,19 +238,19 @@ get.sapa <- function(date='2013-05-20',filename) {
     # Establish connection to SAPAactive
     con.archive <- sapa.db(database='SAPAarchive')
     sapa.archive <- sapply(X=sapa.archive.list,function(x){
-      sapa.table(table.name=as.character(x),con=con.archive,write=FALSE)},simplify=FALSE)
+      y <- sapa.table(table.name=as.character(x),con=con.archive,write=FALSE)
+      assign(paste(x),y,envir = .GlobalEnv) # Test w/o GlobalEnv
+      },simplify=FALSE)
     data.frame.list <- c(sapa.active.list,sapa.archive.list)
     # Close db connection
     dbDisconnect(con.archive)
   }
   
-  # Fix sapa.active.list by adding sapa.active$
-  sapa.active.list <- sapply(sapa.active.list,function(x){as.character(paste('sapa.active$',x,sep=''))},simplify=FALSE)
-  
-  merged.data.frame = Reduce(function(...) merge(..., all=T,by="RID"), sapa.active.list)
+  merged.data.frame = Reduce(function(...) merge(..., all=TRUE,
+                                                 by.x=c('RID','p_num','time'),
+                                                 by.y=c('RID','p_num','time')),
+                             sapa.active)
   merged.data.frame$time <- as.Date(merged.data.frame$time,format="%Y-%m-%d %H:%M:%S")
-  
-  # Reduce(function(t,t1){merge(f(t1),t,all=TRUE,by="x")}, c("a","b","c","d"), data.frame(x=integer()))
   
   merged.data.frame <- clean.sapa(x=merged.data.frame,
                                   max.age=91,
@@ -255,9 +258,9 @@ get.sapa <- function(date='2013-05-20',filename) {
   
   # Save .rdata if argument passed
   if(hasArg(filename)){
-    print(paste('Writing SAPA to ',filename))
+    print(paste('Writing SAPA to ',filename,'.',Sys.Date(),'.Rdata',sep=''))
     save(merged.data.frame,
-         file=paste(filename,Sys.Date,'.Rdata',sep=''))
+         file=paste(filename,'.',as.character(Sys.Date()),'.Rdata',sep=''))
   } else {
     warning('No filename supplied.  Outputting as object!')
   }
