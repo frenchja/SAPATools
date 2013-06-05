@@ -44,7 +44,7 @@ Jason A. French <frenchja@u.northwestern.edu>}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-con <- sapa.db(SAPAactive)
+con <- sapa.db(database='SAPAactive')
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
