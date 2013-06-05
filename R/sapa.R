@@ -3,11 +3,6 @@
 # Email:    frenchja@u.northwestern.edu
 # SAPA:     http://sapa-project.org
 
-# Check packages
-if (!require(RMySQL)) {
-    stop('RMySQL not found. Please install!')
-}
-
 check.location <- function() {
   # Check hostname and location
   if(system('hostname', intern=TRUE) != 'revelle.ci.northwestern.edu'){
@@ -49,16 +44,23 @@ check.location <- function() {
 # lapply(X=con.list,
 #        FUN=con.connect)
 
-sapa.db <- function(database,all=FALSE) {
+sapa.db <- function(database,user,password,all=FALSE) {
   # Establishes connect to SAPA MySQL database
   #
   # Args:
   #   database: Database to connect
+  #   user:     MySQL SAPA username
+  #   password: MySQL SAPA password
   #   all:      Connect to all databases?
   #
   # Returns: RMySQL connection
   
   check.location()
+  
+  # Check packages
+  if (!require(RMySQL)) {
+    stop('RMySQL not found. Please install!')
+  }
   
   # Check if database argument passed
   if (!hasArg(database)) {
@@ -74,6 +76,10 @@ sapa.db <- function(database,all=FALSE) {
     database <- toString(database)
   }
   
+  if (!hasArg(user) | !hasArg(password)) {
+    user <- readline(prompt="Enter the SAPA MySQL username: ")
+    password <- readline(prompt="Enter the SAPA MySQL password: ")
+  }
   print(paste('Connecting to',database))
   
   # Connect to database
@@ -124,11 +130,13 @@ sapa.table <- function(table.name,con,write=TRUE) {
     # Choose Tables to export to R
     table.choice <- select.list(choices=dbListTables(con),
                                 title='Choose which table to convert to a data.frame: ',
-                                multiple=TRUE)
+                                multiple=FALSE)
   } else{
     # Check that sapa.table argument is valid
     tryCatch({
       is.element(el=as.character(table.name),set=dbListTables(con))
+      table.choice <- table.name
+      
     },
              error =  function(e) {
                warning('Invalid table choice!',immediate.=TRUE)
@@ -137,20 +145,21 @@ sapa.table <- function(table.name,con,write=TRUE) {
                                     title='Choose which table to convert to a data.frame: ')
              }
     )
-    table.choice <- toString(table.name)
   }
+  
+  data <- dbReadTable(conn=con,name=table.choice)
   
   if (write == TRUE) {
     table.write <- menu(choices=c('Yes','No'),
                         title='Would you like to save your table to disk?')
     write.name <- readline(prompt='Choose a name for your table in R: ')
     switch(table.write,
-           {write.table(x=table.name[1],
-                        file=paste(write.name,Sys.Date,'.data',sep=''))},
+           {write.table(x=data,
+                        file=paste(write.name,as.character(Sys.Date()),'.data',sep=''),
+                        append=FALSE)},
            {warning('Data not saved to disk yet...')})
   }
 
-  data <- dbReadTable(conn=con,name=table.choice)
   return(data)
   on.exit(dbDisconnect(con))
 }
@@ -200,10 +209,12 @@ get.sapa <- function(date='2013-05-20',filename) {
   # Check for date argument
   if(hasArg(date)){
     print(paste('Obtaining SAPA date from ',date))
-    date <- as.Date(date,format="%Y-%m-%d")
-  } else {
+    date <- as.Date(date)
+  }
+  # Protect against NULL 
+  else {
     warning('No date supplied.  Using 05/20/2013!')
-    date <- as.Date('2013-5-20',format="%Y-%m-%d")
+    date <- as.Date('2013-5-20')
   }
   
   # List of tables on SAPAactive
@@ -212,17 +223,21 @@ get.sapa <- function(date='2013-05-20',filename) {
                          'peer_responses_052013')
   # Establish connection to SAPAactive
   con.active <- sapa.db(database='SAPAactive')
-  
-  sapa.active <- sapply(sapa.active.list,function(x){
+
+  # NEW
+  sapa.active <- Reduce(function(...) merge(..., all=TRUE),
+                             sapply(sapa.active.list,function(x){
      y <- sapa.table(table.name=as.character(x),con=con.active,write=FALSE)
-     assign(paste(x),y,envir = .GlobalEnv) # Test w/o GlobalEnv
-     },simplify=FALSE)
+     },simplify=FALSE))
+  sapa.active$time <- as.Date(sapa.active$time,format="%Y-%m-%d %H:%M:%S")
   
   # Close db connection
   dbDisconnect(con.active)
-  
+  rm(con.active)
+  rm(sapa.active.list)
+
   # Use different MySQL database than SAPAactive if needed
-  if(date < as.Date('2013-5-20',format="%Y-%m-%d")) {
+  if(date < as.Date('2013-5-20')) {
     sapa.archive.list <- c('b5_responses_011112', 'b5_responses_012513', 'b5_responses_071712',
                            'b5_responses_100312', 'exp_responses_011111', 'exp_responses_011112',
                            'exp_responses_012213', 'exp_responses_052011', 'exp_responses_070111',
@@ -237,20 +252,31 @@ get.sapa <- function(date='2013-05-20',filename) {
                            'ws_responses_071712')
     # Establish connection to SAPAactive
     con.archive <- sapa.db(database='SAPAarchive')
+    
+    # NEW
+    sapa.archive <- Reduce(function(...) merge(..., all=TRUE),
+                          sapply(sapa.archive.list,function(x){
+                            y <- sapa.table(table.name=as.character(x),con=con.archive,write=FALSE)
+                          },simplify=FALSE))
+    
+    
     sapa.archive <- sapply(X=sapa.archive.list,function(x){
       y <- sapa.table(table.name=as.character(x),con=con.archive,write=FALSE)
-      assign(paste(x),y,envir = .GlobalEnv) # Test w/o GlobalEnv
       },simplify=FALSE)
-    data.frame.list <- c(sapa.active.list,sapa.archive.list)
+    data.frame.list <- c(sapa.active,sapa.archive)
     # Close db connection
     dbDisconnect(con.archive)
+    rm(con.archive)
   }
-  
-  merged.data.frame = Reduce(function(...) merge(..., all=TRUE,
-                                                 by.x=c('RID','p_num','time'),
-                                                 by.y=c('RID','p_num','time')),
+  # p_num is participant number is some tables...
+  merged.data.frame = Reduce(function(...) merge(..., all=TRUE),
                              sapa.active)
+
   merged.data.frame$time <- as.Date(merged.data.frame$time,format="%Y-%m-%d %H:%M:%S")
+  merged.data.frame$age <- merged.data.frame$age.x
+  merged.data.frame$gender <- merged.data.frame$gender.x
+  merged.data.frame <- subset(merged.data.frame,
+                              select = -c(age.x,age.y,gender.x,gender.y))  
   
   merged.data.frame <- clean.sapa(x=merged.data.frame,
                                   max.age=91,
@@ -268,45 +294,44 @@ get.sapa <- function(date='2013-05-20',filename) {
 }
 
 make.sapa <- function(filename){
-  # Builds the SAPA.rdata, scoring the IQ items.
-  #
-  # Args:
-  #   file: Specify filename output
-  #
-  # Returns:
-  #   data.frame in the sapa.rdata file
-  
-  data <- get.sapa(date='2011-05-20')
-  
-  # Remove Bad IQ Participants
-  # Do some last.iq <- grep() to find last iq_ variable in big.kahuna
-  bad.iq <- rowSums(data[,c((which(colnames(data)=="ACT")+1):last.iq)],
-                    na.rm=TRUE)
-  data <- data[bad.iq>0,]
-  
-  # Scrub responses to change all zero values to ‘NA’.
-#   iq.a <- scrub(iq.a, where = c("relstatus", "ethnic"), isvalue = 0)
-#   iq.a <- scrub(iq.a, where = c((which(colnames(iq.a)=="SATV")):ncol(iq.a)),
-#                 isvalue = 0)
-#   iq.a <- scrub(iq.a, where="p1occ", isvalue=c(98, 99), newvalue=c(0))
-#   iq.a <- scrub(iq.a, where="p2occ", isvalue=c(97, 98, 99), newvalue=c(0))
-#   iq.a <- scrub(iq.a, where="gender", isvalue=c(1), newvalue=c(0))
-#   iq.a <- scrub(iq.a, where="gender", isvalue=c(2), newvalue=c(1))
-#   iq.a <- scrub(iq.a, where="relstatus", isvalue=c(1), newvalue=c(0))
-#   iq.a <- scrub(iq.a, where="relstatus", isvalue=c(2), newvalue=c(1))
-#   iq.a <- scrub(iq.a, where="state", isvalue=c(0))
-#   iq.a <- scrub(iq.a, where="status", isvalue=c(99))
-#   iq.a <- scrub(iq.a, where="p2edu", isvalue=c(999))
-#   iq <- subset(iq.a, select=-c(participant_number, no_code))
-  
-  # Check file argument
-  if(!hasArg(filename)) {
-    filename <- paste('BigKahuna.',Sys.Date(),'.rdata',sep="")
-  } else {
-    filename <- file
-  }
-  
-  # Save the Big Kahuna with today's date
-  save(c(''),
-       file=filename)
+#   # Builds the SAPA.rdata, scoring the IQ items.
+#   #
+#   # Args:
+#   #   file: Specify filename output
+#   #
+#   # Returns:
+#   #   data.frame in the sapa.rdata file
+#   
+#   data <- get.sapa(date='2011-05-20')
+#   
+#   # Remove Bad IQ Participants
+#   # Do some last.iq <- grep() to find last iq_ variable in big.kahuna
+#   bad.iq <- rowSums(data[,c((which(colnames(data)=="ACT")+1):last.iq)],
+#                     na.rm=TRUE)
+#   data <- data[bad.iq>0,]
+#   
+#   # Scrub responses to change all zero values to ‘NA’.
+# #   iq.a <- scrub(iq.a, where = c("relstatus", "ethnic"), isvalue = 0)
+# #   iq.a <- scrub(iq.a, where = c((which(colnames(iq.a)=="SATV")):ncol(iq.a)),
+# #                 isvalue = 0)
+# #   iq.a <- scrub(iq.a, where="p1occ", isvalue=c(98, 99), newvalue=c(0))
+# #   iq.a <- scrub(iq.a, where="p2occ", isvalue=c(97, 98, 99), newvalue=c(0))
+# #   iq.a <- scrub(iq.a, where="gender", isvalue=c(1), newvalue=c(0))
+# #   iq.a <- scrub(iq.a, where="gender", isvalue=c(2), newvalue=c(1))
+# #   iq.a <- scrub(iq.a, where="relstatus", isvalue=c(1), newvalue=c(0))
+# #   iq.a <- scrub(iq.a, where="relstatus", isvalue=c(2), newvalue=c(1))
+# #   iq.a <- scrub(iq.a, where="state", isvalue=c(0))
+# #   iq.a <- scrub(iq.a, where="status", isvalue=c(99))
+# #   iq.a <- scrub(iq.a, where="p2edu", isvalue=c(999))
+# #   iq <- subset(iq.a, select=-c(participant_number, no_code))
+#   
+#   # Check file argument
+#   if(!hasArg(filename)) {
+      filename <- readline(prompt='Please choose a name for the file: ')
+#     filepath <- paste(filename,'.',Sys.Date(),'.rdata',sep="")
+#   }
+#   
+#   # Save the Big Kahuna with today's date
+#   save(c(''),
+#        file=filepath)
 }
