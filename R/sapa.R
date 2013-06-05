@@ -85,22 +85,22 @@ sapa.db <- function(database,user,password,all=FALSE) {
   # Connect to database
   con <- switch(database,
          'SAPAactive'={dbConnect(MySQL(),
-                                    user="username",
-                                    password="password",
+                                    user=username,
+                                    password=password,
                                     dbname="SAPAactive",
                                     host="127.0.0.1",
                                     port=3306)
          },
          'SAPAarchive'={dbConnect(MySQL(),
-                                     user="username",
-                                     password="password",
+                                     user=username,
+                                     password=password,
                                      dbname="SAPAarchive",
                                      host="127.0.0.1",
                                      port=3306)
          },
          'SAPAcurrent'={dbConnect(MySQL(),
-                                     user="username",
-                                     password="password",
+                                     user=username,
+                                     password=password,
                                      dbname="SAPAcurrent",
                                      host="127.0.0.1",
                                      port=3306)
