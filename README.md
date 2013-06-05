@@ -7,14 +7,16 @@ the [SAPA Project](http://www.sapa-project.org).
 Installation
 ------------
 The latest stable release may be downloaded from the 
-[Personality Project](http://personality-project.org):
+[SAPA Project](http://sapa-project.org):
 
 ```r
-install.packages('SAPATools',repos='http://personality-project.org/r/',type='source')
+install.packages('SAPATools',repos='http://sapa-project.org/r/',type='source')
 ```
 
-If you like playing with updated, bleeding-edge code, you can use Hadley Wickam's
-[`devtools`](https://github.com/hadley/devtools) package to download the package from my Github repo. 
+If you like playing with updated, bleeding-edge code, you can use 
+[`devtools`](https://github.com/hadley/devtools) package, developed by [Hadley Wickam](http://had.co.nz/) and 
+[Winston Chang](https://github.com/wch), 
+to download the package from my Github repo. 
 Note that since the repository is currently private, you'll need to provide your Github username 
 and password.
 
@@ -30,14 +32,4 @@ Features
 - Download SAPA data directly from MySQL.
 - Scrub SAPA data of duplicate participants.
 - SSH tunneling (if not used from SAPA server) using `check.location()`.
-- Automatic database downloaded based on desired date range (e.g., 5/20/2013).
-
-To Do
------
-- [ ] Dupe checking using RIDpage, choose 1st time.  Last entry from RID on second pass.
-- [x] Port over clean.sapa() function from HTTP scraping.
-- [ ] Evaluate objects in memory for RMySQL connections.
-- [ ] Look into encrypting SQL passwords.
-- [X] Avoid auto-installing `RMySQL`.
-- [ ] Use `data.tables` package for speed.
-- [ ] Check filename basename and directory valid.
+- Automatic database downloading based on desired date range (e.g., 5/20/2013).
