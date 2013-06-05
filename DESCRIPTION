@@ -3,18 +3,18 @@ Type: Package
 Title: R Tools for use with the SAPA Project
 Version: 0.1
 Date: 2013-05-29
-Authors@R: c(
-    person("Jason", "A.", "French",
-    email = "frenchja@u.northwestern.edu", role = c("aut", "cre")),
-    person("David", "M.", Condon", role = "aut"))
+Author: Jason A. French with contributions from David M. Condon
 Maintainer: Jason A. French <frenchja@u.northwestern.edu>
-Description: More about what it does (maybe more than one line)
+Description: SAPA Tools is a collection of functions design to obtain, scrub, 
+and analyze data from the SAPA Project, a product of the Telemetrics Lab of  
+Northwestern University.
 Depends: R (>= 2.15.2), RMySQL
 Imports:
   RMySQL
 Suggests:
   data.table,
-  doMC
+  doMC,
+  psych
 License: GPL (>= 2)
 LazyLoad: yes
 URL: http://www.sapa-project.org/ 
