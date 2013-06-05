@@ -30,10 +30,8 @@
 *.vrb
 *.xdy
 *.tdo
-
 # R History files
 .Rhistory
-
 # Example code in package build process
 *-Ex.R
 *.Rproj*
@@ -42,3 +40,4 @@
 .DS_Store
 .RData
 *.Rdata
+bill.R
