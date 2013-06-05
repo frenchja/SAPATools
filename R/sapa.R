@@ -31,19 +31,6 @@ check.location <- function() {
   }
 }
 
-# Setup MySQL connections
-# con.list <- c('SAPAactive','SAPAcurrent','SAPAarchive')
-# con.connect <- function(x) {
-#   paste('con.',
-#         x,
-#         " <- dbConnect(MySQL(),user='username',password='password',dbname='",
-#         x,
-#         "',host='localhost')",sep="")
-# }
-# 
-# lapply(X=con.list,
-#        FUN=con.connect)
-
 sapa.db <- function(database,user,password,all=FALSE) {
   # Establishes connect to SAPA MySQL database
   #
@@ -85,21 +72,21 @@ sapa.db <- function(database,user,password,all=FALSE) {
   # Connect to database
   con <- switch(database,
          'SAPAactive'={dbConnect(MySQL(),
-                                    user=username,
+                                    user=user,
                                     password=password,
                                     dbname="SAPAactive",
                                     host="127.0.0.1",
                                     port=3306)
          },
          'SAPAarchive'={dbConnect(MySQL(),
-                                     user=username,
+                                     user=user,
                                      password=password,
                                      dbname="SAPAarchive",
                                      host="127.0.0.1",
                                      port=3306)
          },
          'SAPAcurrent'={dbConnect(MySQL(),
-                                     user=username,
+                                     user=user,
                                      password=password,
                                      dbname="SAPAcurrent",
                                      host="127.0.0.1",
@@ -108,13 +95,16 @@ sapa.db <- function(database,user,password,all=FALSE) {
   return(con)
 }
 
-sapa.table <- function(table.name,con,write=TRUE) {
+get.sapa <- function(table.name,con,filename,write=TRUE,user,password) {
   # Imports a SAPA table from MySQL into R
   #
   # Args:
   #   table.name: MySQL table name
   #   write:      Write table to disk
   #   con:        RMySQL connection
+  #   filename:   Filename to write
+  #   user:       MySQL username for sapa.db()
+  #   password:   MySQL password for sapa.db()
   #
   # Returns:  R data.frame
   
@@ -133,31 +123,26 @@ sapa.table <- function(table.name,con,write=TRUE) {
                                 multiple=FALSE)
   } else{
     # Check that sapa.table argument is valid
-    tryCatch({
-      is.element(el=as.character(table.name),set=dbListTables(con))
+    if (dbExistsTable(conn=con1,name=table.name)) {
       table.choice <- table.name
-      
-    },
-             error =  function(e) {
-               warning('Invalid table choice!',immediate.=TRUE)
-               # Choose Tables to export to R
-               table.choice <- select.list(choices=dbListTables(con),
-                                    title='Choose which table to convert to a data.frame: ')
-             }
-    )
-  }
+    } else {
+      warning('Invalid table choice!',immediate.=TRUE)
+      # Choose Tables to export to R
+      table.choice <- select.list(choices=dbListTables(con),
+                                  title='Choose which table to convert to a data.frame: ')
+    }}
   
   data <- dbReadTable(conn=con,name=table.choice)
   
-  if (write == TRUE) {
-    table.write <- menu(choices=c('Yes','No'),
-                        title='Would you like to save your table to disk?')
-    write.name <- readline(prompt='Choose a name for your table in R: ')
-    switch(table.write,
-           {write.table(x=data,
-                        file=paste(write.name,as.character(Sys.Date()),'.data',sep=''),
-                        append=FALSE)},
-           {warning('Data not saved to disk yet...')})
+  if (write == TRUE & !hasArg(filename)) {
+    filename <- readline(prompt='Choose a name for your table in R: ')
+  }
+  
+  if (write == TRUE & hasArg(filename)) {
+    save(x=data,
+         file=paste(filename,as.character(Sys.Date()),'.Rdata',sep=''),
+         compression_level=9,
+         compress='bzip2')
   }
 
   return(data)
@@ -173,7 +158,9 @@ clean.sapa <- function(x, max.age=91, min.age=13) {
   #   min.age:      Min age to allow
   
   # Take first RIDpage entry if duplicates
-  x <- x[!duplicated(x[,'RIDpage']),]
+  if ('RIDpage' %in% colnames(x) ){
+    x <- x[!duplicated(x[,'RIDpage']),]
+  }
   # Take last RID entry (i.e., latest page) if duplicates
   x <- x[!duplicated(x[,'RID'],fromLast=TRUE),]
   
@@ -197,7 +184,7 @@ clean.sapa <- function(x, max.age=91, min.age=13) {
   return(x)
 }
 
-get.sapa <- function(date='2013-05-20',filename) {
+merge.sapa <- function(date='2013-05-20',filename) {
   # Get SAPA Project data
   #
   # Args:
@@ -258,7 +245,6 @@ get.sapa <- function(date='2013-05-20',filename) {
                           sapply(sapa.archive.list,function(x){
                             y <- sapa.table(table.name=as.character(x),con=con.archive,write=FALSE)
                           },simplify=FALSE))
-    
     
     sapa.archive <- sapply(X=sapa.archive.list,function(x){
       y <- sapa.table(table.name=as.character(x),con=con.archive,write=FALSE)
