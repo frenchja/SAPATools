@@ -84,13 +84,6 @@ sapa.db <- function(database,user,password,all=FALSE) {
                                      dbname="SAPAarchive",
                                      host="127.0.0.1",
                                      port=3306)
-         },
-         'SAPAcurrent'={dbConnect(MySQL(),
-                                     user=user,
-                                     password=password,
-                                     dbname="SAPAcurrent",
-                                     host="127.0.0.1",
-                                     port=3306)
          })
   return(con)
 }
