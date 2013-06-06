@@ -6,15 +6,13 @@ Date: 2013-05-29
 Author: Jason A. French with contributions from David M. Condon
 Maintainer: Jason A. French <frenchja@u.northwestern.edu>
 Description: SAPA Tools is a collection of functions design to obtain, scrub, 
-and analyze data from the SAPA Project, a product of the Telemetrics Lab of  
-Northwestern University.
+and analyze data from the Synthetic Aperture Personality Assessment, 
+a product of the Telemetrics Lab of Northwestern University.
 Depends: R (>= 2.15.2), RMySQL
 Imports:
   RMySQL
 Suggests:
-  data.table,
-  doMC,
-  psych
+  
 License: GPL (>= 2)
 LazyLoad: yes
-URL: http://www.sapa-project.org/ 
+URL: http://www.sapa-project.org/r/
