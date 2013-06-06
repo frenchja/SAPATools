@@ -4,7 +4,7 @@ bibentry("Manual",
    organization = "Northwestern University",
    address      = "Evanston, IL",
    year   = version$year,
-   url    = "http://www.sapa-project.org",
+   url    = "http://www.sapa-project.org/r/",
 
    mheader = "To cite SAPA Tools in publications use:",
 
