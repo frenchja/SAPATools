@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # Author:   Jason A. French & David M. Condon
 # Email:    frenchja@u.northwestern.edu
-# SAPA:     http://sapa-project.org
+# SAPA Tools:     http://sapa-project.org/r/
 
 check.location <- function() {
   # Check hostname and location
