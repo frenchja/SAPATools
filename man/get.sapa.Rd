@@ -1,98 +1,52 @@
 \name{get.sapa}
 \alias{get.sapa}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+get.sapa
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+Imports a single Synthetic Aperture Personality Assessment (i.e., SAPA) 
+table from MySQL into R.}
 \usage{
 get.sapa(table.name, con, filename, write = TRUE)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{table.name}{
-%%     ~~Describe \code{table.name} here~~
+Desired MySQL table in quotes (e.g., 'TAI...').
 }
   \item{con}{
-%%     ~~Describe \code{con} here~~
-}
+Existing RMySQL connection.  Output object of sapa.db()}
   \item{filename}{
-%%     ~~Describe \code{filename} here~~
-}
+If write=TRUE, the desired filename to write.}
   \item{write}{
-%%     ~~Describe \code{write} here~~
-}
+Write the output of get.sapa() to an .Rdata file?}
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+See http://sapa-project.org/r/}
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+
+\item{data}{data.frame from MySQL table.}
+
 }
 \references{
-%% ~put references to the literature/web site here ~
-}
+http://sapa-project.org}
 \author{
-%%  ~~who you are~~
+Jason A. French <frenchja@u.northwestern.edu>
 }
 \note{
-%%  ~~further notes~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{merge.sapa}}
+\code{\link{sapa.db}}
+\code{\link{make.sapa}}
+\code{\link{check.location}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (table.name, con, filename, write = TRUE) 
-{
-    if (!hasArg(con)) {
-        message("RMySQL connection not specified. Calling sapa.db() for you.")
-        con <- sapa.db()
-    }
-    if (!hasArg(table.name)) {
-        table.choice <- select.list(choices = dbListTables(con), 
-            title = "Choose which table to convert to a data.frame: ", 
-            multiple = FALSE)
-    }
-    else {
-        tryCatch({
-            is.element(el = as.character(table.name), set = dbListTables(con))
-            table.choice <- table.name
-        }, error = function(e) {
-            warning("Invalid table choice!", immediate. = TRUE)
-            table.choice <- select.list(choices = dbListTables(con), 
-                title = "Choose which table to convert to a data.frame: ")
-        })
-    }
-    data <- dbReadTable(conn = con, name = table.choice)
-    if (write == TRUE) {
-        table.write <- menu(choices = c("Yes", "No"), title = "Would you like to save your table to disk?")
-        write.name <- readline(prompt = "Choose a name for your table in R: ")
-        switch(table.write, {
-            write.table(x = data, file = paste(write.name, as.character(Sys.Date()), 
-                ".data", sep = ""), append = FALSE)
-        }, {
-            warning("Data not saved to disk yet...")
-        })
-    }
-    return(data)
-    on.exit(dbDisconnect(con))
-  }
+# con.active <- sapa.db('SAPAactive')
+# TAIdata <- get.sapa(table.name='TAI_responses_052013',con=con.active)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
+
 \keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ ~kwd2 }
