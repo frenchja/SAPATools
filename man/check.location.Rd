@@ -13,27 +13,24 @@ check.location()
 }
 %- maybe also 'usage' for other objects documented here.
 \details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+http://sapa-project.org/r/}
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  \item{TRUE}{Returns TRUE if run from server or an SSH connection is established.}
 }
 \references{
 http://sapa-project.org}
 \author{
 Jason A. French <frenchja@u.northwestern.edu>}
 \note{
-%%  ~~further notes~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\section{Warning }{....}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{get.sapa}},
+\code{\link{make.sapa},
+\code{\link{merge.sapa}},
+\code{\link{sapa.db}},
 }
 \examples{
 check.location()
