@@ -105,7 +105,7 @@ get.sapa <- function(table.name,con,filename,write=TRUE,user,password) {
   if (!hasArg(con)) {
     message('RMySQL connection not specified. Calling sapa.db() for you.')
     # Could use dbListConnections(MySQL())
-    con <- sapa.db()
+    con <- sapa.db(user=user,password=password)
   }
   
   # Check if table argument passed
@@ -116,7 +116,7 @@ get.sapa <- function(table.name,con,filename,write=TRUE,user,password) {
                                 multiple=FALSE)
   } else{
     # Check that sapa.table argument is valid
-    if (dbExistsTable(conn=con1,name=table.name)) {
+    if (dbExistsTable(conn=con,name=table.name)) {
       table.choice <- table.name
     } else {
       warning('Invalid table choice!',immediate.=TRUE)
