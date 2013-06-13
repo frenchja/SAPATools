@@ -37,10 +37,9 @@ check.location <- function(){
   else {
     stop('Cannot proceed! Either run this script from the server or tunnel using SSH!')
   }
-}
-                
-                )}
-  )
+})})
+  # Kill SSH Tunnel on.exit()
+  on.exit(system('pkill ssh'))
 }
 
 sapa.db <- function(database,user,password,all=FALSE) {
@@ -100,7 +99,7 @@ sapa.db <- function(database,user,password,all=FALSE) {
   return(con)
 }
 
-get.sapa <- function(table.name,con,filename,write=TRUE,user,password) {
+get.sapa <- function(table.name,con,filename,write=FALSE,user,password) {
   # Imports a SAPA table from MySQL into R
   #
   # Args:
