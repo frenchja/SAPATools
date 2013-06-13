@@ -144,7 +144,7 @@ get.sapa <- function(table.name,con,filename,write=FALSE,user,password) {
   
   if (write == TRUE & hasArg(filename)) {
     save(x=data,
-         file=paste(filename,as.character(Sys.Date()),'.Rdata',sep=''),
+         file=paste(filename,'.',as.character(Sys.Date()),'.Rdata',sep=''),
          compression_level=9,
          compress='bzip2')
   }
