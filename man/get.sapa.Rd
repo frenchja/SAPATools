@@ -14,6 +14,8 @@ get.sapa(table.name, con, filename, write = TRUE)
   \item{table.name}{
 Desired MySQL table in quotes (e.g., 'TAI...').
 }
+  \item{user}{SAPA MySQL username}
+  \item{password}{SAPA MySQL password}
   \item{con}{
 Existing RMySQL connection.  Output object of sapa.db()}
   \item{filename}{
@@ -29,7 +31,7 @@ See http://sapa-project.org/r/}
 
 }
 \references{
-http://sapa-project.org}
+http://sapa-project.org/r/}
 \author{
 Jason A. French <frenchja@u.northwestern.edu>
 }
