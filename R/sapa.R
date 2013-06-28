@@ -23,8 +23,13 @@ check.location <- function(ssh.user){
                 Windows={
                   stop('Sorry!  Windows doesn\'t do SSH tunneling!')},
 {
-  choice <- menu(choices=c('Yes','No'),
-                 title='Do you want to try tunneling over SSH?')
+  if(!hasArg(ssh.user)){
+    choice <- menu(choices=c('Yes','No'),
+                   title='Do you want to try tunneling over SSH?')
+  }
+  else{
+    choice <- 1
+  }
   if(choice == 1 & nchar(Sys.which('ssh')) > 0) {
     message(paste('SSH located at ',Sys.which('ssh'),'. Connecting.', sep=''))
     if(hasArg(ssh.user)){
