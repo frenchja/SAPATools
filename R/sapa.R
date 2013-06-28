@@ -73,7 +73,7 @@ sapa.db <- function(database,user,password,ssh.user,all=FALSE) {
   
   # Check if database argument passed
   if (!hasArg(database)) {
-    database <- select.list(choices=c('SAPAactive','SAPAcurrent','SAPAarchive'),
+    database <- select.list(choices=c('SAPAactive','SAPAarchive'),
                             title='Choose the database to connect: ',
                             multiple=FALSE)
   }
