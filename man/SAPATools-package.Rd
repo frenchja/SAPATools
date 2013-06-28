@@ -3,11 +3,10 @@
 \alias{SAPATools}
 \docType{package}
 \title{
-R Tools for use with the SAPA Project
+SAPA Tools
 }
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+SAPA Tools is an R package developed by Jason A. French and David M. Condon for using the SAPA dataset. 
 }
 \details{
 \tabular{ll}{
@@ -17,7 +16,14 @@ Version: \tab 0.2\cr
 Date: \tab 2013-06-28\cr
 License: \tab GPL (>= 2)\cr
 }
-~~ An overview of how to use the package, including the most important functions ~~
+SAPA Tools is an R package developed by Jason A. French and David M. Condon for using the SAPA dataset. As such, relevant functions are included for:
+
+    Obtaining the dataset from MySQL
+    Scrubbing the dataset of duplicate entries
+    Applying factor names to the various SAPA demographic codes
+    Scoring our open-source cognitive ability items
+
+We think the SAPA Project is an incredible resource for researchers for learning about personality using traits, abilities, and interests. As such, the primary goal of SAPA Tools is to make it easy to play with our data. 
 }
 \author{
 Jason A. French <frenchja@u.northwestern.edu>
@@ -25,14 +31,23 @@ Jason A. French <frenchja@u.northwestern.edu>
 Maintainer: Jason A. French <frenchja@u.northwestern.edu>
 }
 \references{
-~~ Literature or other references for background information ~~
-}
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
-\keyword{ package }
+French, J. A. & Condon, D. M. (2013). SAPA Tools: Tools to analyze the SAPA Project. R package version 0.1. http://sapa-project.org/r
+
+Wilt, J., Condon, D., & Revelle, W. (2012). Telemetrics and online data collection. Handbook of developmental research methods, 163-179}
+
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+\code{\link{get.sapa}}
+\code{\link{sapa.db}}
+\code{\link{clean.sapa}}
+\code{\link{check.location}}
 }
 \examples{
-# get.sapa(filename='BigKahuna',write=TRUE)
+# Connect to the SAPA database
+# con.active <- sapa.db()
+
+# Pull a single table for analysis
+# mytable <- get.sapa(con='con.active')
+
+# Get and scrub all the current SAPA data
+# mydata <- clean.sapa()
 }
