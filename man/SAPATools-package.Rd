@@ -13,8 +13,8 @@ More about what it does (maybe more than one line)
 \tabular{ll}{
 Package: \tab SAPATools\cr
 Type: \tab Package\cr
-Version: \tab 0.1\cr
-Date: \tab 2013-05-29\cr
+Version: \tab 0.2\cr
+Date: \tab 2013-06-28\cr
 License: \tab GPL (>= 2)\cr
 }
 ~~ An overview of how to use the package, including the most important functions ~~

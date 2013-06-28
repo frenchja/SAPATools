@@ -3,7 +3,7 @@
 # Email:    frenchja@u.northwestern.edu
 # SAPA Tools:     http://sapa-project.org/r/
 
-check.location <- function(){
+check.location <- function(ssh.user){
   # Check hostname and location
   hostname <- system('hostname', intern=TRUE)
   switch(hostname,
@@ -27,7 +27,12 @@ check.location <- function(){
                  title='Do you want to try tunneling over SSH?')
   if(choice == 1 & nchar(Sys.which('ssh')) > 0) {
     message(paste('SSH located at ',Sys.which('ssh'),'. Connecting.', sep=''))
-    user <- readline(prompt='Enter your NetID: ')
+    if(hasArg(ssh.user)){
+      user <- ssh.user
+    }
+    else{
+      user <- readline(prompt='Enter your NetID: ')
+    }
     cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
                  user,'@revelle.ci.northwestern.edu',
                  sep='')
@@ -42,18 +47,19 @@ check.location <- function(){
   on.exit(system('pkill ssh'))
 }
 
-sapa.db <- function(database,user,password,all=FALSE) {
+sapa.db <- function(database,user,password,ssh.user,all=FALSE) {
   # Establishes connect to SAPA MySQL database
   #
   # Args:
   #   database: Database to connect
   #   user:     MySQL SAPA username
   #   password: MySQL SAPA password
+  #   ssh.user: SSH NetID
   #   all:      Connect to all databases?
   #
   # Returns: RMySQL connection
   
-  check.location()
+  check.location(ssh.user)
   
   # Check packages
   if (!require(RMySQL)) {
