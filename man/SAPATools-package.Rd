@@ -3,7 +3,7 @@
 \alias{SAPATools}
 \docType{package}
 \title{
-SAPA Tools
+R Tools for use with the SAPA Project
 }
 \description{
 SAPA Tools is an R package developed by Jason A. French and David M. Condon for using the SAPA dataset. 
@@ -31,15 +31,13 @@ Jason A. French <frenchja@u.northwestern.edu>
 Maintainer: Jason A. French <frenchja@u.northwestern.edu>
 }
 \references{
-French, J. A. & Condon, D. M. (2013). SAPA Tools: Tools to analyze the SAPA Project. R package version 0.1. http://sapa-project.org/r
+French, J. A. & Condon, D. M. (2013). SAPA Tools: Tools to analyze the SAPA Project. R package version 0.1. http://sapa-project.org/r.
 
-Wilt, J., Condon, D., & Revelle, W. (2012). Telemetrics and online data collection. Handbook of developmental research methods, 163-179}
+Wilt, J., Condon, D., & Revelle, W. (2012). Telemetrics and online data collection. Handbook of developmental research methods, 163-179.
+}
 
 \seealso{
-\code{\link{get.sapa}}
-\code{\link{sapa.db}}
-\code{\link{clean.sapa}}
-\code{\link{check.location}}
+
 }
 \examples{
 # Connect to the SAPA database
