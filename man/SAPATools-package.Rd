@@ -34,5 +34,5 @@ Maintainer: Jason A. French <frenchja@u.northwestern.edu>
 ~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 }
 \examples{
-get.sapa(filename='BigKahuna')
+# get.sapa(filename='BigKahuna',write=TRUE)
 }

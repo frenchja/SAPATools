@@ -37,5 +37,5 @@ David M. Condon <emailcondon@gmail.com>
 \seealso{
 }
 \examples{
-combined.data <- merge.sapa()
+# combined.data <- merge.sapa()
 }

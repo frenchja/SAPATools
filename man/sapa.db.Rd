@@ -34,7 +34,7 @@ Jason A. French <frenchja@u.northwestern.edu>}
 \seealso{
 }
 \examples{
-con <- sapa.db(database='SAPAactive')
+# con <- sapa.db(database='SAPAactive')
 }
 
 
