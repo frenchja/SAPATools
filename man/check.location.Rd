@@ -11,14 +11,17 @@ errors.}
 \usage{
 check.location()
 }
-%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{ssh.user}{Your NetID used to establish an SSH tunnel to the SAPA Project. 
+  See \code{\link{sapa.db}} for more information}
+}
 \details{
 http://sapa-project.org/r/}
 \value{
   \item{TRUE}{Returns TRUE if run from server or an SSH connection is established.}
 }
 \references{
-http://sapa-project.org}
+http://sapa-project.org/r}
 \author{
 Jason A. French <frenchja@u.northwestern.edu>}
 \note{
@@ -33,6 +36,7 @@ Jason A. French <frenchja@u.northwestern.edu>}
 \code{\link{sapa.db}},
 }
 \examples{
-check.location()
+# Establish an SSH tunnel if necessary.
+# check.location(ssh.user='NetID')
 }
 
