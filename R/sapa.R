@@ -36,7 +36,7 @@ check.location <- function(ssh.user){
     cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
                  user,'@revelle.ci.northwestern.edu',
                  sep='')
-    system(cmd)
+    system(cmd,ignore.stdout=TRUE)
     return(TRUE)
   }
   else {
