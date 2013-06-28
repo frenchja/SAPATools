@@ -33,7 +33,7 @@ Maintainer: Jason A. French <frenchja@u.northwestern.edu>
 \references{
 French, J. A. & Condon, D. M. (2013). SAPA Tools: Tools to analyze the SAPA Project. R package version 0.1. http://sapa-project.org/r.
 
-Wilt, J., Condon, D., & Revelle, W. (2012). Telemetrics and online data collection. Handbook of developmental research methods, 163-179.
+Wilt, J., Condon, D., & Revelle, W. (2012). Telemetrics and online data collection. Handbook of Developmental Research Methods, 163-179.
 }
 
 \seealso{
