@@ -164,20 +164,24 @@ get.sapa <- function(table.name,con,filename,write=FALSE,user,password) {
   on.exit(dbDisconnect(con))
 }
 
-clean.sapa <- function(x, max.age=91, min.age=13) {
+clean.sapa <- function(x, max.age=91, min.age=13, age=TRUE, unique=TRUE) {
   # Returns data.frame of unique participants
   #
   # Args:
   #   x:            SAPA data.frame from sapa.table()
   #   max.age:      Max age to allow
   #   min.age:      Min age to allow
+  #   age:          Filter based on age
+  #   unique:       Return only unique RIDs
   
   # Take first RIDpage entry if duplicates
   if ('RIDpage' %in% colnames(x) ){
     x <- x[!duplicated(x[,'RIDpage']),]
   }
   # Take last RID entry (i.e., latest page) if duplicates
-  x <- x[!duplicated(x[,'RID'],fromLast=TRUE),]
+  if (hasArg(unique)){
+    x <- x[!duplicated(x[,'RID'],fromLast=TRUE),]
+  }
   
   # Approach 2:  Suggested by Winston Chang
   # dat2 <- dat[order(dat$PID, dat$time),] or dat2 <- dat[order(dat$PID, dat$Page),]
@@ -189,13 +193,16 @@ clean.sapa <- function(x, max.age=91, min.age=13) {
   # indices <- tapply(seq_along(x$time),
   #                  x$RIDpage,
   #                  FUN=function(x) { x[which.max(sapa.jason$time[x])] })
-
+  
   # Scrub page ages
   if (missing(min.age) | is.null(min.age))
     min.age <- 13
   if (missing(max.age) | is.null(max.age))
     max.age <- 91
-  x <- x[which(x$age > min.age & x$age<max.age & x$no_code<1),]
+  if (hasArg(age)){
+    x <- x[which(x$age > min.age & x$age<max.age & x$no_code<1),]
+  }
+
   return(x)
 }
 
@@ -292,6 +299,77 @@ merge.sapa <- function(date='2013-05-20',filename) {
     warning('No filename supplied.  Outputting as object!')
   }
   return(merged.data.frame)
+}
+
+nonNAs <- function(x) {
+  # Returns items answered by each participant
+  #
+  # Args:
+  #   x:  SAPA data.frame
+  #
+  as.vector(apply(x, 1, function(x) length(which(!is.na(x)))))
+}
+
+getSAPAscrape <- function(x,vintage=NULL) {
+    
+    switch(vintage,  oldmain = { 
+      url <- paste("http://sapa-project.org/data/archive/scraping/main.php?option=", x, sep="") },
+           oldexp = {
+             url <- paste("http://sapa-project.org/data/archive/scraping/exploratory.php?option=", x, sep="")},
+           current = {
+             url <- paste("http://sapa-project.org/data/archive/scraping/SAPAactive.php?option=", x, sep="")},
+           NULL = {
+             print("ERROR - must provide the vintage -")}) 
+    require(plyr)
+    require(RCurl)
+    require(XML)
+    
+    SAPAhtml <- getURL(url) # Gets the data file 
+    parsed <- htmlTreeParse(SAPAhtml, useInternalNodes=TRUE)  # Parse the file into chunks
+    body <- xpathApply(parsed, "//body")[[1]]	# Pulls out the body section only
+    chunk1 <- as(body, "character")	# Coerces the body to character class
+    chunk2 <- gsub("<br/>", "<br>", chunk1[[1]])	# Breaks are either formatted this way
+    chunk3 <- gsub("<br />", "<br>", chunk2)	# ... or this way
+    chunk4 <- gsub("<body>", "", chunk3)	# Drop tags
+    chunk5 <- gsub("  <p>", "", chunk4)	# Drops the <p> marks
+    chunk6 <- gsub("</p>", "", chunk5)	# Drops the </p> marks
+    chunk7 <- gsub("\n", "", chunk6)	# Drops the \n marks
+    chunk8 <- gsub("</body>", "", chunk7)	# Drop more tags
+    chunk9 <- gsub(",,", ",NA,", chunk8)	# Formatting
+    chunk10 <- gsub(",,", ",NA,", chunk9)	# Formatting
+    chunk11 <- gsub(",<br>", ",NA<br>", chunk10)	# Formatting ends of line
+    strings <- strsplit(chunk11, "<br>")[[1]]	# Splits the big string into one for each P
+    strings.df <- ldply(1:length(strings), function(x) { rbind( strsplit(strings[x], ",")[[1]])}) # Converts to data frame
+    names(strings.df) <- strsplit(strings[1], ",")[[1]]
+    y <- strings.df[c(2:nrow(strings.df)),]	# Drops header row
+    y <- suppressWarnings(apply(y,2,as.numeric))	# Changes from character to integer
+    dupli <- duplicated(y[,"RID"])+0	# Codes the duplicates as 1
+    y <- y[dupli==0,]	#Keeps the unique RIDs
+    return(y)
+  }
+
+uniqueSAPAscrape <- function(x) {
+    dupli <- duplicated(x[,"RID"])+0  # Codes the duplicates as 1
+    x <- x[dupli==0,]#Keeps the unique RIDs
+    return(x)
+}
+
+dropSAPAscrape <- function(x, max.age, min.age) {
+    if (missing(min.age))
+      min.age <- 13
+    if (missing(max.age))
+      max.age <- 91
+    x <- subset(x, x[,"age"]>min.age)
+    x <- subset(x, x[,"age"]<max.age)
+    x <- subset(x, x[,"no_code"]<1)
+    return(x)
+}
+
+cleanSAPAscrape <- function(x, vintage=NULL, max.age, min.age) {  
+    x <- getSAPAscrape(x, vintage=vintage)
+    x <- uniqueSAPAscrape(x)
+    x <- dropSAPAscrape(x, min.age=min.age, max.age=max.age)
+    return(x)
 }
 
 make.sapa <- function(filename){
