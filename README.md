@@ -29,7 +29,8 @@ install_github(repo='SAPATools',username='frenchja',
 
 Features
 --------
-- Download SAPA data directly from MySQL.
+- Download SAPA data directly from MySQL or HTML scraping.
 - Scrub SAPA data of duplicate participants.
 - SSH tunneling (if not used from SAPA server) using `check.location()`.
 - Automatic database downloading based on desired date range (e.g., 5/20/2013).
+- Map SAPA data by zipcode (added by William Revelle).
