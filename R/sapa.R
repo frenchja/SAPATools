@@ -174,11 +174,11 @@ clean.sapa <- function(x, max.age=91, min.age=13, age=TRUE, unique=TRUE) {
   #   age:          Filter based on age
   #   unique:       Return only unique RIDs
   
-  # Take first RIDpage entry if duplicates
+  # Take last RIDpage entry if duplicates
   if ('RIDpage' %in% colnames(x) ){
     x <- x[!duplicated(x[,'RIDpage']),]
   }
-  # Take last RID entry (i.e., latest page) if duplicates
+  # Take first RID entry (i.e., latest page) if duplicates
   if (hasArg(unique)){
     x <- x[!duplicated(x[,'RID'],fromLast=TRUE),]
   }
