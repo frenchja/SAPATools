@@ -17,12 +17,16 @@ check.location <- function(ssh.user){
                         sep='')
            system(cmd) # wait=TRUE?
            return(TRUE)
-         },{
-         warning('This script is meant be run from the SAPA Project server!')
+         },
+         # switch() if not hardin or revelle.ci.northwestern.edu
+         {
+         warning('This script is meant be run from the SAPA Project or Hardin server!')
          switch(Sys.info()['sysname'],
                 Windows={
                   stop('Sorry!  Windows doesn\'t do SSH tunneling!')},
+# switch if OS not Windows
 {
+  # Prompt for SSH Tunnel
   if(!hasArg(ssh.user)){
     choice <- menu(choices=c('Yes','No'),
                    title='Do you want to try tunneling over SSH?')
@@ -30,18 +34,23 @@ check.location <- function(ssh.user){
   else{
     choice <- 1
   }
+  
   if(choice == 1 & nchar(Sys.which('ssh')) > 0) {
-    message(paste('SSH located at ',Sys.which('ssh'),'. Connecting.', sep=''))
-    if(hasArg(ssh.user)){
-      user <- ssh.user
-    }
-    else{
-      user <- readline(prompt='Enter your NetID: ')
-    }
-    cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
-                 user,'@revelle.ci.northwestern.edu',
-                 sep='')
-    system(cmd,ignore.stdout=TRUE)
+    message('Type the following into Terminal:\n ssh -fNg -L 3306:127.0.0.1:3306 NetID@revelle.ci.northwestern.edu\n')
+    readline(prompt='Press [Enter] when you\'ve established the SSH Tunnel.')
+
+# Old SSH Tunnel code.
+#    message(paste('SSH located at ',Sys.which('ssh'),'. Connecting.', sep=''))
+#     if(hasArg(ssh.user)){
+#       user <- ssh.user
+#     }
+#     else{
+#       user <- readline(prompt='Enter your NetID: ')
+#     }
+#     cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
+#                  user,'@revelle.ci.northwestern.edu',
+#                  sep='')
+#     system(cmd,ignore.stdout=TRUE)
     return(TRUE)
   }
   else {
