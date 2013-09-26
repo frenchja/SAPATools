@@ -17,20 +17,18 @@ If you like playing with updated, bleeding-edge code, you can use
 [`devtools`](https://github.com/hadley/devtools) package, developed by [Hadley Wickam](http://had.co.nz/) and 
 [Winston Chang](https://github.com/wch), 
 to download the package from my Github repo. 
-Note that since the repository is currently private, you'll need to provide your Github username 
-and password.
 
 ```r
 # install.packages('devtools')
 library(devtools)
-install_github(repo='SAPATools',username='frenchja',
-               auth_user='',password='')
+install_github(repo='SAPATools',username='frenchja')
 ```
 
 Features
 --------
 - Download SAPA data directly from MySQL or HTML scraping.
 - Scrub SAPA data of duplicate participants.
+- Calculate temperament, ability, and interest norms by age and gender.
 - SSH tunneling (if not used from SAPA server) using `check.location()`.
 - Automatic database downloading based on desired date range (e.g., 5/20/2013).
 - Map SAPA data by zipcode (added by [William Revelle](http://personality-project.org/revelle.html)).

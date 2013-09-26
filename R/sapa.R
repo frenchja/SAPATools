@@ -335,25 +335,25 @@ getSAPAscrape <- function(x,vintage=NULL) {
     
     SAPAhtml <- getURL(url) # Gets the data file 
     parsed <- htmlTreeParse(SAPAhtml, useInternalNodes=TRUE)  # Parse the file into chunks
-    body <- xpathApply(parsed, "//body")[[1]]	# Pulls out the body section only
-    chunk1 <- as(body, "character")	# Coerces the body to character class
-    chunk2 <- gsub("<br/>", "<br>", chunk1[[1]])	# Breaks are either formatted this way
-    chunk3 <- gsub("<br />", "<br>", chunk2)	# ... or this way
-    chunk4 <- gsub("<body>", "", chunk3)	# Drop tags
-    chunk5 <- gsub("  <p>", "", chunk4)	# Drops the <p> marks
-    chunk6 <- gsub("</p>", "", chunk5)	# Drops the </p> marks
-    chunk7 <- gsub("\n", "", chunk6)	# Drops the \n marks
-    chunk8 <- gsub("</body>", "", chunk7)	# Drop more tags
-    chunk9 <- gsub(",,", ",NA,", chunk8)	# Formatting
-    chunk10 <- gsub(",,", ",NA,", chunk9)	# Formatting
-    chunk11 <- gsub(",<br>", ",NA<br>", chunk10)	# Formatting ends of line
-    strings <- strsplit(chunk11, "<br>")[[1]]	# Splits the big string into one for each P
+    body <- xpathApply(parsed, "//body")[[1]] # Pulls out the body section only
+    chunk1 <- as(body, "character") # Coerces the body to character class
+    chunk2 <- gsub("<br/>", "<br>", chunk1[[1]])  # Breaks are either formatted this way
+    chunk3 <- gsub("<br />", "<br>", chunk2)  # ... or this way
+    chunk4 <- gsub("<body>", "", chunk3)  # Drop tags
+    chunk5 <- gsub("  <p>", "", chunk4) # Drops the <p> marks
+    chunk6 <- gsub("</p>", "", chunk5)  # Drops the </p> marks
+    chunk7 <- gsub("\n", "", chunk6)  # Drops the \n marks
+    chunk8 <- gsub("</body>", "", chunk7) # Drop more tags
+    chunk9 <- gsub(",,", ",NA,", chunk8)  # Formatting
+    chunk10 <- gsub(",,", ",NA,", chunk9) # Formatting
+    chunk11 <- gsub(",<br>", ",NA<br>", chunk10)  # Formatting ends of line
+    strings <- strsplit(chunk11, "<br>")[[1]] # Splits the big string into one for each P
     strings.df <- ldply(1:length(strings), function(x) { rbind( strsplit(strings[x], ",")[[1]])}) # Converts to data frame
     names(strings.df) <- strsplit(strings[1], ",")[[1]]
-    y <- strings.df[c(2:nrow(strings.df)),]	# Drops header row
-    y <- suppressWarnings(apply(y,2,as.numeric))	# Changes from character to integer
-    dupli <- duplicated(y[,"RID"])+0	# Codes the duplicates as 1
-    y <- y[dupli==0,]	#Keeps the unique RIDs
+    y <- strings.df[c(2:nrow(strings.df)),] # Drops header row
+    y <- suppressWarnings(apply(y,2,as.numeric))  # Changes from character to integer
+    dupli <- duplicated(y[,"RID"])+0  # Codes the duplicates as 1
+    y <- y[dupli==0,] #Keeps the unique RIDs
     return(y)
   }
 
