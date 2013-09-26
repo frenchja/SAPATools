@@ -24,6 +24,10 @@ library(devtools)
 install_github(repo='SAPATools',username='frenchja')
 ```
 
+Using SAPA Tools
+----------------
+- Check out our [wiki](https://github.com/frenchja/SAPATools/wiki).
+
 Features
 --------
 - Download SAPA data directly from MySQL or HTML scraping.
