@@ -2,7 +2,7 @@
 # Email:    frenchja@u.northwestern.edu
 # SAPA Tools:     http://sapa-project.org/r/
 
-AspectNorms <- function(x,aspect=ALL) {
+Testing <- function(x,aspect=ALL) {
   # Recalculates norms for the 12 aspect scores
   #
   # Args:
