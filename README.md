@@ -16,12 +16,14 @@ install.packages('SAPATools',repos='http://sapa-project.org/r/',type='source')
 If you like playing with updated, bleeding-edge code, you can use 
 [`devtools`](https://github.com/hadley/devtools) package, developed by [Hadley Wickam](http://had.co.nz/) and 
 [Winston Chang](https://github.com/wch), 
-to download the package from my Github repo. 
+to download the package from my Github repo. Note that because this repo is currently private, 
+you'll need to enter your current Github username and password.
 
 ```r
 # install.packages('devtools')
 library(devtools)
-install_github(repo='SAPATools',username='frenchja')
+install_github(repo='SAPATools',username='frenchja',
+    auth_user='githubID',password='secret')
 ```
 
 Using SAPA Tools
