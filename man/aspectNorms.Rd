@@ -26,7 +26,7 @@ AspectNorms(x)
 %% ~put references to the literature/web site here ~
 }
 \author{
-David M. Condon and Jason A. French <frenchja@u.northwestern.edu>
+David M. Condon and Jason A. French <jason at sapa-project.org>
 }
 \note{
 %%  ~~further notes~~
@@ -39,6 +39,6 @@ David M. Condon and Jason A. French <frenchja@u.northwestern.edu>
 }
 \examples{
 # Produces matrix of normed Aspect scores from SAPA data.frame
-AspectNorms(x)
+# AspectNorms(TAIE)
 }
 

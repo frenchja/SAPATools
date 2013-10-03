@@ -12,8 +12,8 @@ SAPA Tools is an R package developed by Jason A. French and David M. Condon for 
 \tabular{ll}{
 Package: \tab SAPATools\cr
 Type: \tab Package\cr
-Version: \tab 2013.09.27\cr
-Date: \tab 2013-09-27\cr
+Version: \tab 2013.10.03\cr
+Date: \tab 2013-10-03\cr
 License: \tab GPL (>= 2)\cr
 }
 SAPA Tools is an R package developed by Jason A. French and David M. Condon for using the SAPA dataset. As such, relevant functions are included for:

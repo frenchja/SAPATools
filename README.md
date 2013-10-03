@@ -34,7 +34,8 @@ Features
 --------
 - Download SAPA data directly from MySQL or HTML scraping.
 - Scrub SAPA data of duplicate participants.
-- Calculate temperament, ability, and interest norms by age and gender (added by David M. Condon).
+- Calculate temperament, ability, and interest norms by age and gender (added by [David M. Condon](http://sapa-project.org/dmc/)).
 - SSH tunneling (if not used from SAPA server) using `check.location()`.
 - Automatic database downloading based on desired date range (e.g., 5/20/2013).
 - Map SAPA data by zipcode (added by [William Revelle](http://personality-project.org/revelle.html)).
+- Integrate US census data with SAPA variables. (added by [David M. Condon](http://sapa-project.org/dmc/))
