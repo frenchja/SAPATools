@@ -1,4 +1,6 @@
-# Author: Jason A. French & David M. Condon Email: frenchja@u.northwestern.edu SAPA Tools:
+# Author: Jason A. French & David M. Condon 
+# Email: frenchja@u.northwestern.edu 
+# SAPA Tools:
 # http://sapa-project.org/r/
 
 AspectNorms <- function(x) {

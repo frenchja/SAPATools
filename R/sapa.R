@@ -7,7 +7,7 @@ check.location <- function(ssh.user){
   # Check hostname and location
   hostname <- system('hostname', intern=TRUE)
   switch(hostname,
-         revelle.ci.northwetern.edu={
+         revelle.ci.northwestern.edu={
            return(TRUE)
          },
          hardin={
@@ -38,19 +38,6 @@ check.location <- function(ssh.user){
   if(choice == 1 & nchar(Sys.which('ssh')) > 0) {
     message('Type the following into Terminal:\n ssh -fNg -L 3306:127.0.0.1:3306 NetID@revelle.ci.northwestern.edu\n')
     readline(prompt='Press [Enter] when you\'ve established the SSH Tunnel.')
-
-# Old SSH Tunnel code.
-#    message(paste('SSH located at ',Sys.which('ssh'),'. Connecting.', sep=''))
-#     if(hasArg(ssh.user)){
-#       user <- ssh.user
-#     }
-#     else{
-#       user <- readline(prompt='Enter your NetID: ')
-#     }
-#     cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
-#                  user,'@revelle.ci.northwestern.edu',
-#                  sep='')
-#     system(cmd,ignore.stdout=TRUE)
     return(TRUE)
   }
   else {
