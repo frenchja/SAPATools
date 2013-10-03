@@ -39,6 +39,6 @@ David M. Condon and Jason A. French <frenchja@u.northwestern.edu>
 }
 \examples{
 # Produces matrix of normed Aspect scores from SAPA data.frame
-AspectNorms(x)
+# AspectNorms(TAIE)
 }
 
