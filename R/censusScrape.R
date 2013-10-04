@@ -43,8 +43,8 @@ function(x, state=NULL, key=NULL, delay=NULL) {
 	
 	}
 
-	getACS <- 
-	function(x, key=NULL) {
+getACS <- 
+function(x, key=NULL) {
 		#
 		# A function for scraping and cleaning up ACS data by ZCTA
 		# x is a list of strings of ACS variables like: c("H0060001","H0060002")
@@ -57,15 +57,10 @@ function(x, state=NULL, key=NULL, delay=NULL) {
 			x <- paste(x, collapse=',' )
 			}
 			
-		url <- paste("http://api.census.gov/data/2011/acs5?get=", x, "&for=zip+code+tabulation+area:*&key=", key, sep="")
-		
+		url <- paste("http://api.census.gov/data/2011/acs5?get=", x, "&for=zip+code+tabulation+area:*&key=", key, sep="")	
 		ZCTAstrings <- fromJSON(getURL(url))
-
-		ACS <- as.data.frame(t(sapply(ZCTAstrings[2:length(ZCTAstrings)], rbind)))
-			
+		ACS <- as.data.frame(t(sapply(ZCTAstrings[2:length(ZCTAstrings)], rbind)))	
 		names(ACS) <- unlist(ZCTAstrings[1])
 		colnames(ACS)[ncol(ACS)] <- "ZCTA"
-
 		return(ACS)
-		
-		}
+}
