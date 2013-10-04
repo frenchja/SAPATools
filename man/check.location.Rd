@@ -23,7 +23,7 @@ http://sapa-project.org/r/}
 \references{
 http://sapa-project.org/r}
 \author{
-Jason A. French <frenchja@u.northwestern.edu>}
+Jason A. French \email{jason at sapa-project.org}
 \note{
 }
 

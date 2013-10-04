@@ -27,8 +27,8 @@ http://sapa-project.org/r/}
 \references{
 }
 \author{
-Jason A. French <frenchja@u.northwestern.edu>
-David M. Condon <emailcondon@gmail.com>
+Jason A. French \email{jason at sapa-project.org
+David M. Condon
 }
 \note{
 }

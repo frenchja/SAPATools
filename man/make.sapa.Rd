@@ -26,7 +26,7 @@ make.sapa(file)
 %% ~put references to the literature/web site here ~
 }
 \author{
-Jason A. French <frenchja@u.northwestern.edu> and David M. Condon
+Jason A. French \email{jason at sapa-project.org and David M. Condon
 }
 \note{
 %%  ~~further notes~~

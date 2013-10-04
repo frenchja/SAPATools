@@ -21,9 +21,9 @@ SAPA data.frame
 \references{
 http://sapa-project.org/r}
 \author{
-David M. Condon <emailcondon at gmail.com
+David M. Condon \email{emailcondon at gmail.com}
 
-Maintainer: Jason A. French}
+Maintainer: Jason A. French \email{jason at sapa-project.org}
 
 \examples{
 # items.answered <- nonNAs(sapa.table)

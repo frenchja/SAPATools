@@ -36,7 +36,7 @@ Logical to scrub duplicate participants
 \references{
 http://sapa-project.org/r}
 \author{
-Jason A. French <frenchja at u.northwestern.edu>
+Jason A. French \email{jason at sapa-project.org
 David M. Condon
 
 Maintainer:  Jason A. French}

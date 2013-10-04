@@ -28,7 +28,7 @@ http://sapa-project.org/r/}
 %% ~put references to the literature/web site here ~
 }
 \author{
-Jason A. French <frenchja@u.northwestern.edu>}
+Jason A. French \email{jason at sapa-project.org}}
 
 
 \seealso{
