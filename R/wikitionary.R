@@ -22,6 +22,11 @@ wiki.search <- function(x){
 }
 
 wiki.compound <- function(x){
+  # Function to find compound words from a given stem
+  # Arg:
+  #   x: stem word (e.g., 'book')
+  # Returns: list of compound words
+  
   require(RCurl)
   require(RJSONIO)
   words <- getForm(
@@ -35,7 +40,15 @@ wiki.compound <- function(x){
 }
 
 wiki.synonym <- function(x){
-  
+  require(RCurl)
+  require(RJSONIO)
+  definitions <- getForm(
+    "https://en.wiktionary.org/w/api.php",
+    action = 'query',
+    title = x,
+    rvprop = 'content'
+    )
+  definitions <- fromJSON(definitions)
 }
 
 wiki.antonym <- function(x){
