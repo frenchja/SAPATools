@@ -21,6 +21,19 @@ wiki.search <- function(x){
   return(fromJSON(data))
 }
 
+wiki.compound <- function(x){
+  require(RCurl)
+  require(RJSONIO)
+  data <- getForm(
+    "https://en.wiktionary.org/w/api.php", 
+    action  = "opensearch", 
+    search  = x
+  )
+  data <- fromJSON(data)
+  compounds <- subset(data, nchar(unlist(data)) > (nchar(x)+3))
+  return(unlist(compounds))
+}
+
 wiki.synonym <- function(x){
   
 }
