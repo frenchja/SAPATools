@@ -24,13 +24,13 @@ wiki.search <- function(x){
 wiki.compound <- function(x){
   require(RCurl)
   require(RJSONIO)
-  data <- getForm(
+  words <- getForm(
     "https://en.wiktionary.org/w/api.php", 
     action  = "opensearch", 
     search  = x
   )
-  data <- fromJSON(data)
-  compounds <- subset(data, nchar(unlist(data)) > (nchar(x)+3))
+  words <- fromJSON(words)[[2]]
+  compounds <- words[which(nchar(words)>(nchar(x)+3))]
   return(unlist(compounds))
 }
 
