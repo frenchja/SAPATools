@@ -1,5 +1,7 @@
 # Wiktionary R API
 # Authors:  David M. Condon and Jason A. French <jason@sapa-project.org>
+# TODO
+# 1. Add Rhyme lookup.
 
 wiki.login <- function(user,password){
   require(RCurl)
