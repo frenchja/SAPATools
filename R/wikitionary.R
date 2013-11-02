@@ -40,15 +40,22 @@ wiki.compound <- function(x){
 }
 
 wiki.synonym <- function(x){
+  # https://en.wiktionary.org/w/api.php?action=query&titles=book&redirects=1&prop=extracts
   require(RCurl)
-  require(RJSONIO)
+  require(XML)
   definitions <- getForm(
     "https://en.wiktionary.org/w/api.php",
     action = 'query',
-    title = x,
-    rvprop = 'content'
+    titles = x,
+    redirects = '1',
+    prop = 'extracts',
+    explaintext = 1
     )
-  definitions <- fromJSON(definitions)
+  definitions <- gsub("<.*?>", "", definitions) # Filter html codes
+  definitions <- gsub("&lt;", "", definitions)
+  definitions <- gsub("&gt;", "", definitions)
+  page <- readHTMLTable(definitions)
+  return(page)
 }
 
 wiki.antonym <- function(x){
