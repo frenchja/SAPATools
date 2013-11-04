@@ -8,6 +8,8 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
   # TODO:  
   # 1. scale() mean.
   
+  aspect <<- aspect
+  sapa.data[[aspect]] <- scale(sapa.data[[aspect]])
   # Check package
   if(!require(ggplot2)){
     stop('Install ggplot2 package.')
@@ -113,9 +115,10 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
                               y = get(aspect)))
   
   sapa.plot <- c + geom_pointrange(aes(ymin=get(aspect)-ci, 
-                                       ymax=get(aspect)+ci),size=.8) + coord_flip() + 
-    xlab(label='Academic Discipline') + ylab(label=paste(aspect,'Mean')) +
-    theme_bw() + 
-   geom_hline(aes(yintercept = mean(group.data[[aspect]])),colour="#BB0000", linetype="dashed")
+                                       ymax=get(aspect)+ci),size=.8) + 
+                coord_flip() + 
+                xlab(label='Academic Discipline') + ylab(label=paste(aspect,'Mean')) + 
+                theme_bw() + 
+                geom_hline(aes(yintercept = 0),colour="#BB0000", linetype="dashed")
   print(sapa.plot)
 }
