@@ -58,12 +58,12 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
                               'Government','History','Law and Legal Studies','Philosophy','Political Science','Psychology','Religion',
                               'Sociology','Other Social Sciences Major')
          },
-         'job'|'occupation'={
+         'job'={
            factor.labels <- c()
          } )
   
-  sapa.data$discipline <- factor(as.factor(sapa.data$discipline), 
-                                 levels=c(levels(as.factor(sapa.data$discipline))),
+  sapa.data[[by]] <- factor(as.factor(sapa.data[[by]]), 
+                                 levels=c(levels(as.factor(sapa.data[[by]]))),
                                  labels=factor.labels) 
   # Winston's Function
   summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
@@ -105,11 +105,13 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
   group.data <- summarySE(data = sapa.data, measurevar = aspect, 
                           groupvars = 'discipline', na.rm=TRUE)
   
-  c <- ggplot(group.data, aes(x = reorder(discipline,get(aspect)), y = get(aspect)))
+  c <- ggplot(group.data, aes(x = reorder(discipline,get(aspect)), 
+                              y = get(aspect)))
   
-  sapa.plot <- c + geom_pointrange(aes(ymin=get(aspect)-ci, ymax=get(aspect)+ci),size=.8) + coord_flip() + 
+  sapa.plot <- c + geom_pointrange(aes(ymin=get(aspect)-ci, 
+                                       ymax=get(aspect)+ci),size=.8) + coord_flip() + 
     xlab(label='Academic Discipline') + ylab(label=paste(aspect,'Mean')) +
-    theme_bw() #+ 
-   # geom_hline(aes(yintercept = mean(group.data$get(aspect))),colour="#BB0000", linetype="dashed")
+    theme_bw() + 
+   geom_hline(aes(yintercept = mean(group.data[[aspect]])),colour="#BB0000", linetype="dashed")
   print(sapa.plot)
 }
