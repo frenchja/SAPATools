@@ -3,15 +3,19 @@
 # Plot SAPA Aspects
 
 plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores, 
-                         by = 'discipline'){
+                         by = 'discipline', facet = FALSE){
   # This function plots SAPA aspects by discipline or major.
   # TODO:  
   # 1. scale() mean.
-  # 2. Add by switch.
   
   # Check package
   if(!require(ggplot2)){
     stop('Install ggplot2 package.')
+  }
+  
+  # Facet majors by discipline for cleaner plot
+  if(isTRUE(facet) & by == 'major'){
+    facet <- 'discipline'
   }
   
   switch(by,
