@@ -9,7 +9,14 @@ AspectNorms <- function(x) {
     if (!require(psych)) {
         stop("Install psych package.")
     }
-
+    # Test for data.table package
+    if (!require(data.table)) {
+        warning("Install data.table package for a faster function.")
+        dt <- FALSE
+    } else {
+    	dt <- TRUE
+    	x <- data.table(x)
+    }
 	negAssertiveness <- subset(x, select = c(q_1730, q_1848, q_1992, q_2161, q_1151, q_1242, q_1913))
 	posAssertiveness <- subset(x, select = c(q_131, q_158, q_279, q_698, q_832, q_861, q_1104, q_1110, q_1393, q_1810, q_260, q_455, q_1055, q_1205, q_1652, q_1768))
 	negAssertivenessMeans <- round((7 - describe(negAssertiveness)[, 3]), 2)
@@ -170,7 +177,12 @@ AspectNorms <- function(x) {
 
 	SDs <- c(CompassionItemSDs, PolitenessItemSDs, IndustryItemSDs, OrderlinessItemSDs, BalanceItemSDs, BoldnessItemSDs, AssertivenessItemSDs, SociabilityItemSDs, HonestyItemSDs, HumilityItemSDs, IntellectItemSDs, OpennessItemSDs)
 
-	aspectMatrix <- rbind(Means, SDs)
+	# Test for data.table package
+    if (dt)) {
+    	aspectMatrix <- rbindlist(Means, SDs)
+    } else {
+    	aspectMatrix <- rbind(Means, SDs)
+    }
 
 	return(aspectMatrix)
 }
