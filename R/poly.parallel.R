@@ -1,5 +1,5 @@
 polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = FALSE, 
-   std.err = FALSE, progress = TRUE, parallel = FALSE, n.cpu = 1) 
+   std.err = FALSE, progress = TRUE, parallel = TRUE, n.cpu) 
 {
    if (!require(mvtnorm)) {
        stop("I am sorry, you must have mvtnorm installed to use polychoric")
