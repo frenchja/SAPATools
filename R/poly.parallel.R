@@ -17,14 +17,22 @@ polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = F
         warning('parallel not used.  Please install foreach!')
         parallel <- FALSE
       }
-      if (!require(multicore))  {
-        warning('parallel not used.  Please install multicore!')
-        parallel <- FALSE
-       }
-       if(!n.cpu) {
-        n.cpu <- multicore:::detectCores()
-       }
-       registerDoMC(cores=n.cpu)
+      if(!n.cpu) {
+        # Adapted from multicore to reduce dependencies
+        # Urbanek, S. (2013)
+        systems <- list(darwin = "/usr/sbin/sysctl -n hw.ncpu 2>/dev/null", 
+                        freebsd = "/sbin/sysctl -n hw.ncpu 2>/dev/null", linux = "grep processor /proc/cpuinfo 2>/dev/null|wc -l", 
+                        irix = c("hinv |grep Processors|sed 's: .*::'", "hinv|grep '^Processor '|wc -l"), 
+                        solaris = "/usr/sbin/psrinfo -v|grep 'Status of.*processor'|wc -l")
+        
+        for (i in seq(systems)) if (length(grep(paste("^", names(systems)[i], sep = ""), R.version$os))) 
+          for (cmd in systems[i]) {
+            a <- gsub("^ +", "", system(cmd, TRUE)[1])
+            if (length(grep("^[1-9]", a))) 
+              n.cpu <- as.integer(a)
+          }
+      }
+      registerDoMC(cores=n.cpu)
    }
    cl <- match.call()
    nvar <- dim(x)[2]
