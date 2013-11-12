@@ -1,6 +1,7 @@
 polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = FALSE, 
-   std.err = FALSE, progress = TRUE, parallel = TRUE, n.cpu) 
+   std.err = FALSE, progress = TRUE, parallel = TRUE, n.cpu)
 {
+  assignInNamespace("polychoric", polychoric, ns="psych")
    if (!require(mvtnorm)) {
        stop("I am sorry, you must have mvtnorm installed to use polychoric")
    }
@@ -57,7 +58,8 @@ polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = F
    colnames(mat) <- rownames(mat) <- colnames(x)
    x <- x - min(x, na.rm = TRUE) + 1
    foreach(i=2:nvar) %dopar% {
-   #for (i in 2:nvar) {
+     # Implement old for loop using switch()?   
+     #for (i in 2:nvar) {
        if (progress) 
            progressBar(i^2/2, nvar^2/2, "Polychoric")
 
