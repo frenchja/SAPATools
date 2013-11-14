@@ -316,7 +316,7 @@ make.sapa <- function(filename){
    #   data.frame in the sapa.rdata file
    
    # Connect to SAPAarchive via SQL
-   con.archive <- <- sapa.db(database='SAPAarchive',user='RobertHooke',password='polymath')
+   con.archive <- sapa.db(database='SAPAarchive',user='RobertHooke',password='polymath')
 
    b5_responses_012513 <- get.sapa(con=con.archive,table.name='b5_responses_012513')
    b5_responses_012513 <- clean.sapa(b5_responses_012513)
