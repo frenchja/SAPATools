@@ -178,7 +178,7 @@ AspectNorms <- function(x) {
 	SDs <- c(CompassionItemSDs, PolitenessItemSDs, IndustryItemSDs, OrderlinessItemSDs, BalanceItemSDs, BoldnessItemSDs, AssertivenessItemSDs, SociabilityItemSDs, HonestyItemSDs, HumilityItemSDs, IntellectItemSDs, OpennessItemSDs)
 
 	# Test for data.table package
-    if (dt)) {
+    if (dt) {
     	aspectMatrix <- rbindlist(Means, SDs)
     } else {
     	aspectMatrix <- rbind(Means, SDs)
