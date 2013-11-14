@@ -18,7 +18,7 @@ polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = F
         warning('parallel not used.  Please install foreach!')
         parallel <- FALSE
       }
-      if(!n.cpu) {
+      if(!hasArg(n.cpu)) {
         # Adapted from multicore to reduce dependencies
         # Urbanek, S. (2013)
         systems <- list(darwin = "/usr/sbin/sysctl -n hw.ncpu 2>/dev/null", 
