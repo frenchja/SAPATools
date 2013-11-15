@@ -9,6 +9,8 @@ PairwiseDescribe <- function(x) {
 	mean <- mean(countXItems, na.rm=TRUE)
 	median <- median(countXItems, na.rm=TRUE)
 	sd <- sd(countXItems, na.rm=TRUE)
-	results <- list(mean=mean, median=median, sd=sd)
+	min <- min(countXItems, na.rm=TRUE)
+	max <- max(countXItems, na.rm=TRUE)
+	results <- list(mean=mean, median=median, sd=sd, min=min, max=max)
 	return(results)
 }
