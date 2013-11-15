@@ -7,7 +7,8 @@ PairwiseDescribe <- function(x) {
 	lowleft <- lower.tri(countXItems, diag = FALSE)
 	countXItems[!lowleft] <- NA
 	mean <- mean(countXItems, na.rm=TRUE)
+	median <- median(countXItems, na.rm=TRUE)
 	sd <- sd(countXItems, na.rm=TRUE)
-	results <- list(mean=mean, sd=sd)
+	results <- list(mean=mean, median=median, sd=sd)
 	return(results)
 }
