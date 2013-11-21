@@ -1,5 +1,5 @@
 polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = FALSE, 
-   std.err = FALSE, progress = TRUE, parallel = TRUE, n.cpu)
+   std.err = FALSE, progress = TRUE, parallel = TRUE, n.cpu = NULL)
 {
   assignInNamespace("polychoric", polychoric, ns="psych")
    if (!require(mvtnorm)) {
@@ -9,7 +9,7 @@ polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = F
        warning("I am sorry, you must have  polycor installed to use polychoric with the polycor option")
        polycor <- FALSE
    }
-   if (parallel) {
+   if (isTRUE(parallel)) {
        if (!require(doMC))  {
         warning('parallel not used.  Please install doMC!')
         parallel <- FALSE
@@ -18,7 +18,7 @@ polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = F
         warning('parallel not used.  Please install foreach!')
         parallel <- FALSE
       }
-      if(!hasArg(n.cpu)) {
+      if(is.null(n.cpu)) {
         # Adapted from multicore to reduce dependencies
         # Urbanek, S. (2013)
         systems <- list(darwin = "/usr/sbin/sysctl -n hw.ncpu 2>/dev/null", 
@@ -66,7 +66,7 @@ polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = F
        	for (j in 1:(i - 1)) {
        	    if (t(!is.na(x[, i])) %*% (!is.na(x[, j])) > 2) {
        	        if (!polycor) {
-       	          poly <- polyc(x[, i], x[, j], tau[, i], tau[, 
+       	          poly <- psych:::polyc(x[, i], x[, j], tau[, i], tau[, 
        	            j], global = global)
        	          mat[i, j] <- mat[j, i] <- poly$rho
        	        }
