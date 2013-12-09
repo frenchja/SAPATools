@@ -4,13 +4,15 @@
 
 RID <- commandArgs(trailingOnly=TRUE)[1]
 Scores <-as.numeric(commandArgs(trailingOnly=TRUE)[-1])
-
+# Random data for testing
+if(length(Scores)< 12){
+  Scores <-runif(12,1,9)
+}
 aspects <- data.frame(
   Traits=c('Assertiveness','Balance','Boldness','Compassion','Honesty',
                    'Humility','Industriousness','Intellect','Openness','Orderliness',
                    'Politeness','Sociability'),
-  # Random data for testing
-  #Score=runif(12,1,9),
+
   Score=Scores,
   Factor=c('Extraversion','Emotional Stability','Emotional Stability','Agreeableness','Integrity',
            'Integrity','Conscientiousness','Openness','Openness','Conscientiousness',

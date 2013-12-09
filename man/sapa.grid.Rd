@@ -41,7 +41,7 @@ sapa.grid(df, DV, gridsize = 300, database = "state", average = TRUE, regions = 
 %% ...
 }
 \references{
-http://sapa-project.org/r/}
+https://sapa-project.org/r/}
 \author{
 William Revelle <revelle@northwestern.edu>
 Maintainer:  Jason A. French

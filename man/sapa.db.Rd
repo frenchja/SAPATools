@@ -19,7 +19,7 @@ Logical for establishing connections for all databases
 }
 }
 \details{
-http://sapa-project.org/r/}
+https://sapa-project.org/r/}
 \value{
 \item{con}{RMySQL Connection to SAPA}
 

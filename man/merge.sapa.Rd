@@ -19,23 +19,17 @@ Filename to use if writing to disk.
 }
 }
 \details{
-http://sapa-project.org/r/}
+https://sapa-project.org/r/}
 \value{
 \item{data}{Merged data.frame}
-
 }
-\references{
+\references{https://sapa-project.org/r/
 }
 \author{
-Jason A. French \email{jason at sapa-project.org
+Jason A. French \email{jason at sapa-project.org}
 David M. Condon
 }
-\note{
-}
 
-
-\seealso{
-}
 \examples{
 # combined.data <- merge.sapa()
 }

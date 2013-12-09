@@ -1,8 +1,8 @@
 Package: SAPATools
 Type: Package
 Title: R Tools for use with the SAPA Project
-Version: 2013.11.14
-Date: 2013-11-14
+Version: 2013.12.09
+Date: 2013-12-09
 Author: Jason A. French with contributions from David M. Condon.
 Maintainer: Jason A. French <jason@sapa-project.org>
 Description: SAPA Tools is a collection of functions design to obtain, scrub, and analyze data from the Synthetic Aperture Personality Assessment, a product of the Telemetrics Lab of Northwestern University.

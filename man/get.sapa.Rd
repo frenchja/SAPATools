@@ -24,20 +24,15 @@ If write=TRUE, the desired filename to write.}
 Write the output of get.sapa() to an .Rdata file?}
 }
 \details{
-See http://sapa-project.org/r/}
+See https://sapa-project.org/r/}
 \value{
-
-\item{data}{data.frame from MySQL table.}
-
+  \item{data}{data.frame from MySQL table.}
 }
 \references{
-http://sapa-project.org/r/}
+https://sapa-project.org/r/}
 \author{
-Jason A. French \email{jason at sapa-project.org
+Jason A. French \email{jason at sapa-project.org}
 }
-\note{
-}
-
 
 \seealso{
 \code{\link{merge.sapa}}
@@ -49,6 +44,3 @@ Jason A. French \email{jason at sapa-project.org
 # con.active <- sapa.db('SAPAactive')
 # TAIdata <- get.sapa(table.name='TAI_responses_052013',con=con.active)
 }
-
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }
