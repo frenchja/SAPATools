@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 # Author:  Jason A. French
+# 12 aspect scores must be passed alphabetically (see line 9)
 
 RID <- commandArgs(trailingOnly=TRUE)[1]
 Scores <-as.numeric(commandArgs(trailingOnly=TRUE)[-1])
