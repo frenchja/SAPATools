@@ -74,7 +74,6 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
                               2112,2113,2201,2202,2203,2204,2205,2206,2207,2208,2209,2210,2211,2212,2213)
          },
          'job'={
-           factor.labels <- c()
          } )
   
   sapa.data[[by]] <- factor(as.factor(sapa.data[[by]]), 
@@ -127,12 +126,16 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
     group.data <- summarySE(data = sapa.data, measurevar = aspect, 
                             groupvars = c('discipline','major'), na.rm=TRUE)
   }
-  else if(by == 'major'){
+#   else if(by == 'major'){
+#     group.data <- summarySE(data = sapa.data, measurevar = aspect, 
+#                             groupvars = 'major', na.rm=TRUE)
+#   } else if(by == 'discipline') {
+#     group.data <- summarySE(data = sapa.data, measurevar = aspect, 
+#                             groupvars = 'discipline', na.rm=TRUE)
+#   } 
+  else {
     group.data <- summarySE(data = sapa.data, measurevar = aspect, 
-                            groupvars = 'major', na.rm=TRUE)
-  } else if(by == 'discipline') {
-    group.data <- summarySE(data = sapa.data, measurevar = aspect, 
-                            groupvars = 'discipline', na.rm=TRUE)
+                            groupvars = by, na.rm=TRUE)
   }
   
   # Get rid of majors with NAs
@@ -154,6 +157,7 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
   if(isTRUE(facet)){
   sapa.plot <- sapa.plot + facet_wrap(~ discipline)
   }
-  
+  # Density Plot
+  # c <- ggplot(sapa.data,aes(x=ICAR60)) + geom_density(adjust=5,aes(color=factor(discipline),linetype=factor(discipline)),size=1)  + scale_color_grey()
   print(sapa.plot)
 }
