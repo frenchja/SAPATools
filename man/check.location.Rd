@@ -1,6 +1,5 @@
 \name{check.location}
 \alias{check.location}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 check.location
 }
@@ -16,25 +15,24 @@ check.location()
   See \code{\link{sapa.db}} for more information}
 }
 \details{
-http://sapa-project.org/r/}
+https://sapa-project.org/r/}
 \value{
   \item{TRUE}{Returns TRUE if run from server or an SSH connection is established.}
 }
 \references{
-http://sapa-project.org/r}
+https://sapa-project.org/r}
 \author{
 Jason A. French \email{jason at sapa-project.org}
-\note{
 }
 
-\section{Warning }{....}
 
 \seealso{
 \code{\link{get.sapa}},
 \code{\link{make.sapa},
 \code{\link{merge.sapa}},
 \code{\link{sapa.db}},
-}
+}}
+
 \examples{
 # Establish an SSH tunnel if necessary.
 # check.location(ssh.user='NetID')

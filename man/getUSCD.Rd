@@ -35,7 +35,7 @@ getUSCD(x, state='17', key=NULL, delay=2)
 
 }
 \references{
-\url{http://sapa-project.org/r/}
+\url{https://sapa-project.org/r/}
 }
 \author{
 David M. Condon & Jason A. French <jason at sapa-project.org>

@@ -9,21 +9,18 @@ Recalculate the Mean and SD for the 12 aspect scores
 This function is an omnibus function to obtain, clean, score, and build the 
 SAPA R data.frame used by the Telemetrics Lab at Northwestern University.}
 \usage{
-AspectNorms(x)
+AspectMatrix <- AspectNorms(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \details{
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+\item{aspectMatrix }{Matrix of means and sds for 12 aspect scores.}
+
 }
 \references{
-%% ~put references to the literature/web site here ~
+\url{https://sapa-project.org/r/}
 }
 \author{
 David M. Condon and Jason A. French <jason at sapa-project.org>

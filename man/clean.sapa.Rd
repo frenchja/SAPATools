@@ -27,16 +27,13 @@ Logical to scrub bad ages}
 Logical to scrub duplicate participants
 }
 }
-\details{
-}
-\value{
-\item{data.frame}{Returned SAPA data.frame}
 
-}
+\value{
+\item{data.frame}{Returned SAPA data.frame}}
 \references{
 http://sapa-project.org/r}
 \author{
-Jason A. French \email{jason at sapa-project.org
+Jason A. French \email{jason at sapa-project.org} and
 David M. Condon
 
 Maintainer:  Jason A. French}
@@ -48,4 +45,3 @@ Maintainer:  Jason A. French}
 
 # clean.table <- clean.sapa(sapa.table)
 }
-

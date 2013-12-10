@@ -32,7 +32,7 @@ sapa.clean(data, database = "usa", DV = "g")
 %% ...
 }
 \references{
-http://sapa-project.org/r/
+https://sapa-project.org/r/
 }
 \author{
 William Revelle <revelle@northwestern.edu>

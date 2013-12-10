@@ -5,11 +5,11 @@
 
 wiki.login <- function(user,password){
   require(RCurl)
-  https://en.wiktionary.org/w/api.php?action=login&lgname=user&lgpassword=password
+  # https://en.wiktionary.org/w/api.php?action=login&lgname=user&lgpassword=password
 }
 
 wiki.logout <- function(){
-  https://en.wiktionary.org/w/api.php?action=logout
+  # https://en.wiktionary.org/w/api.php?action=logout
 }
 
 wiki.search <- function(x){

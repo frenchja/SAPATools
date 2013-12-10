@@ -52,7 +52,7 @@ sapa.combined(df, DV, gridsize = 300, database = "usa", regions = ".", average =
 %% ...
 }
 \references{
-http://sapa-project.org/r/}
+https://sapa-project.org/r/}
 \author{
 William Revelle <revelle@northwestern.edu>
 Maintainer:  Jason A. French

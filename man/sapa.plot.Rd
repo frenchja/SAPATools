@@ -37,7 +37,7 @@ sapa.plot(xyz, main = "SAPA map", database = "state", n = 21, range = c(-3, 3))
 %% ...
 }
 \references{
-http://sapa-project.org/r/}
+https://sapa-project.org/r/}
 \author{
 William Revelle <revelle@northwestern.edu>
 Maintainer:  Jason A. French

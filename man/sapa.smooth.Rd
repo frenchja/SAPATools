@@ -34,7 +34,7 @@ sapa.smooth(grid, size = 11, miss = 0.05, w = NULL)
 %% ...
 }
 \references{
-http://sapa-project.org/r/}
+https://sapa-project.org/r/}
 \author{
 William Revelle <revelle@northwestern.edu>
 Maintainer:  Jason A. French
