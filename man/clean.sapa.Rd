@@ -33,7 +33,7 @@ Logical to scrub duplicate participants
 \references{
 http://sapa-project.org/r}
 \author{
-Jason A. French \email{jason at sapa-project.org} and
+Jason A. French \email{jason@sapa-project.org} and
 David M. Condon
 
 Maintainer:  Jason A. French}

@@ -1,7 +1,7 @@
-polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = FALSE, 
+polychoric.poly <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = FALSE, 
    std.err = FALSE, progress = TRUE, parallel = TRUE, n.cpu = NULL)
 {
-  assignInNamespace("polychoric", polychoric, ns="psych")
+  # assignInNamespace("polychoric", polychoric, ns="psych")
    if (!require(mvtnorm)) {
        stop("I am sorry, you must have mvtnorm installed to use polychoric")
    }
@@ -11,13 +11,9 @@ polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = F
    }
    if (isTRUE(parallel)) {
        if (!require(doMC))  {
-        warning('parallel not used.  Please install doMC!')
-        parallel <- FALSE
-       }
+        stop('parallel not used.  Please install doMC!')}
       if (!require(foreach))  {
-        warning('parallel not used.  Please install foreach!')
-        parallel <- FALSE
-      }
+        stop('parallel not used.  Please install foreach!')}
       if(is.null(n.cpu)) {
         # Adapted from multicore to reduce dependencies
         # Urbanek, S. (2013)
@@ -57,16 +53,14 @@ polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = F
    mat <- matrix(0, nvar, nvar)
    colnames(mat) <- rownames(mat) <- colnames(x)
    x <- x - min(x, na.rm = TRUE) + 1
-   foreach(i=2:nvar) %dopar% {
-     # Implement old for loop using switch()?   
-     #for (i in 2:nvar) {
+   #foreach(i=2:nvar) %dopar% {
+   for (i in 2:nvar) {
        if (progress) 
            progressBar(i^2/2, nvar^2/2, "Polychoric")
-
-       	for (j in 1:(i - 1)) {
+       for (j in 1:(i - 1)) {
        	    if (t(!is.na(x[, i])) %*% (!is.na(x[, j])) > 2) {
        	        if (!polycor) {
-       	          poly <- psych:::polyc(x[, i], x[, j], tau[, i], tau[, 
+       	          poly <- polyc(x[, i], x[, j], tau[, i], tau[, 
        	            j], global = global)
        	          mat[i, j] <- mat[j, i] <- poly$rho
        	        }

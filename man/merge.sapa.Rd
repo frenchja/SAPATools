@@ -26,7 +26,7 @@ https://sapa-project.org/r/}
 \references{https://sapa-project.org/r/
 }
 \author{
-Jason A. French \email{jason at sapa-project.org}
+Jason A. French \email{jason@sapa-project.org}
 David M. Condon
 }
 

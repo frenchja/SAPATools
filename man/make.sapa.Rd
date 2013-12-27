@@ -19,7 +19,7 @@ make.sapa(file)
 \references{
 https://sapa-project.org/r}
 \author{
-Jason A. French \email{jason at sapa-project.org} and David M. Condon
+Jason A. French \email{jason@sapa-project.org} and David M. Condon
 }
 
 

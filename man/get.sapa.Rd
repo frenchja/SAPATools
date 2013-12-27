@@ -16,12 +16,9 @@ Desired MySQL table in quotes (e.g., 'TAI...').
 }
   \item{user}{SAPA MySQL username}
   \item{password}{SAPA MySQL password}
-  \item{con}{
-Existing RMySQL connection.  Output object of sapa.db()}
-  \item{filename}{
-If write=TRUE, the desired filename to write.}
-  \item{write}{
-Write the output of get.sapa() to an .Rdata file?}
+  \item{con}{Existing RMySQL connection.  Output object of sapa.db()}
+  \item{filename}{If write=TRUE, the desired filename to write.}
+  \item{write}{Write the output of get.sapa() to an .Rdata file?}
 }
 \details{
 See https://sapa-project.org/r/}
@@ -31,7 +28,7 @@ See https://sapa-project.org/r/}
 \references{
 https://sapa-project.org/r/}
 \author{
-Jason A. French \email{jason at sapa-project.org}
+Jason A. French \email{jason@sapa-project.org}
 }
 
 \seealso{

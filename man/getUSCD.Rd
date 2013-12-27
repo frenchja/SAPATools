@@ -1,12 +1,11 @@
 \name{getUSCD}
 \alias{getUSCD}
 \alias{getACS}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Function to download US census data using the census.gov API.
 }
 \description{
-
+Function to download US census data using the census.gov API.
 }
 \usage{
 getUSCD(x, state='17', key=NULL, delay=2)
@@ -26,13 +25,9 @@ getUSCD(x, state='17', key=NULL, delay=2)
   number to seconds to pause btw API hits
   }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
 \item{USCD}{data.frame of the US census data}
-
-
 }
 \references{
 \url{https://sapa-project.org/r/}
@@ -40,19 +35,4 @@ getUSCD(x, state='17', key=NULL, delay=2)
 \author{
 David M. Condon & Jason A. French <jason at sapa-project.org>
 }
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{datagen}
-\keyword{manip}

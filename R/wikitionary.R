@@ -3,14 +3,14 @@
 # TODO
 # 1. Add Rhyme lookup.
 
-wiki.login <- function(user,password){
-  require(RCurl)
+#wiki.login <- function(user,password){
+#  require(RCurl)
   # https://en.wiktionary.org/w/api.php?action=login&lgname=user&lgpassword=password
-}
+#}
 
-wiki.logout <- function(){
+#wiki.logout <- function(){
   # https://en.wiktionary.org/w/api.php?action=logout
-}
+#}
 
 wiki.search <- function(x){
   require(RCurl)
@@ -60,7 +60,7 @@ wiki.synonym <- function(x){
   return(page)
 }
 
-wiki.antonym <- function(x){
-  
-}
+#wiki.antonym <- function(x){
+#  
+#}
   
