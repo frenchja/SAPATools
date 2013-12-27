@@ -1,0 +1,190 @@
+Parallel Polychoric Test Suite
+===============================
+
+This is a series of tests for the parallelized `polychoric()` function.  The speedup 
+is acheived using the [foreach](http://cran.r-project.org/web/packages/foreach/index.html) 
+and [doMC](http://cran.r-project.org/web/packages/doMC/index.html) packages. 
+
+Using **doMC**, we register the backend by telling R that we have *n* cpus available to use
+instead of one.  Then, we use **foreach** as the frontend, and replace the `for` 
+loop in `psych:::polyBinBvn` with `foreach(...) %dopar% {}`.  Instead of iterating 
+over each individual cell to figure out the optimal correlation value, we can do *n* 
+at a time.
+
+Simulate our data
+-----------------
+```{r cache=TRUE,tidy=TRUE,highlight=TRUE}
+library(psych)
+poly.data <- sim.irt(nvar=50,n=100)
+```
+
+Bill's Speed
+-------------
+```{r cache=TRUE,tidy=TRUE,highlight=TRUE}
+system.time(bill <- psych:::polychoric(x=poly.data$items))
+```
+
+Bill's Output
+------------
+```{r cache=TRUE,tidy=TRUE,highlight=TRUE}
+print(bill)
+```
+
+New R Functions
+--------------
+```{r cache=TRUE,tidy=TRUE,highlight=TRUE}
+polyBinBvn <- function (rho, rc, cc) 
+{
+    if (min(rc) < -9999) 
+        rc <- rc[-1]
+    if (min(cc) < -9999) 
+        cc <- cc[-1]
+    if (max(rc) > 9999) 
+        rc <- rc[-length(rc)]
+    if (max(cc) > 99999) 
+        cc <- cc[-length(cc)]
+    row.cuts <- c(-Inf, rc, Inf)
+    col.cuts <- c(-Inf, cc, Inf)
+    nr <- length(rc) + 1
+    nc <- length(cc) + 1
+    P <- matrix(0, nr, nc)
+    R <- matrix(c(1, rho, rho, 1), 2, 2)
+    for (i in 1:(nr - 1)) {
+        foreach(j=1:(nc-1)) %dopar% {
+            #for (j in 1:(nc - 1)) {
+            P[i, j] <- pmvnorm(lower = c(row.cuts[i], col.cuts[j]), 
+                               upper = c(row.cuts[i + 1], col.cuts[j + 1]), 
+                               corr = R)
+        }
+    }
+    P[1, nc] <- pnorm(rc[1]) - sum(P[1, 1:(nc - 1)])
+    P[nr, 1] <- pnorm(cc[1]) - sum(P[1:(nr - 1), 1])
+    if (nr > 2) {
+        for (i in (2:(nr - 1))) {
+            P[i, nc] <- pnorm(rc[i]) - pnorm(rc[i - 1]) - sum(P[i, 
+                                                                1:(nc - 1)])
+        }
+    }
+    if (nc > 2) {
+        for (j in (2:(nc - 1))) {
+            P[nr, j] <- pnorm(cc[j]) - pnorm(cc[j - 1]) - sum(P[1:(nr - 
+                                                                       1), j])
+        }
+    }
+    if (nc > 1) 
+        P[nr, nc] <- 1 - pnorm(rc[nr - 1]) - sum(P[nr, 1:(nc - 
+                                                              1)])
+    P
+}
+
+polychoric <- function (x, smooth = TRUE, global = TRUE, polycor = FALSE, ML = FALSE, 
+   std.err = FALSE, progress = TRUE, parallel = TRUE, n.cpu = NULL)
+{
+   if (!require(mvtnorm)) {
+       stop("I am sorry, you must have mvtnorm installed to use polychoric")
+   }
+   if (polycor && (!require(polycor))) {
+       warning("I am sorry, you must have  polycor installed to use polychoric with the polycor option")
+       polycor <- FALSE
+   }
+   if (isTRUE(parallel)) {
+       if (!require(doMC))  {
+        stop('parallel not used.  Please install doMC!')}
+      if (!require(foreach))  {
+        stop('parallel not used.  Please install foreach!')}
+      if(is.null(n.cpu)) {
+        # Adapted from multicore to reduce dependencies
+        # Urbanek, S. (2013)
+        systems <- list(darwin = "/usr/sbin/sysctl -n hw.ncpu 2>/dev/null", 
+                        freebsd = "/sbin/sysctl -n hw.ncpu 2>/dev/null", linux = "grep processor /proc/cpuinfo 2>/dev/null|wc -l", 
+                        irix = c("hinv |grep Processors|sed 's: .*::'", "hinv|grep '^Processor '|wc -l"), 
+                        solaris = "/usr/sbin/psrinfo -v|grep 'Status of.*processor'|wc -l")
+        
+        for (i in seq(systems)) if (length(grep(paste("^", names(systems)[i], sep = ""), R.version$os))) 
+          for (cmd in systems[i]) {
+            a <- gsub("^ +", "", system(cmd, TRUE)[1])
+            if (length(grep("^[1-9]", a))) 
+              n.cpu <- as.integer(a)
+          }
+      }
+      registerDoMC(cores=n.cpu)
+   }
+   cl <- match.call()
+   nvar <- dim(x)[2]
+   nsub <- dim(x)[1]
+   x <- as.matrix(x)
+   xt <- table(x)
+   nvalues <- max(x, na.rm = TRUE) - min(x, na.rm = TRUE) + 
+       1
+   if (nvalues > 8) 
+       stop("You have more than 8 categories for your items, polychoric is probably not needed")
+   xmin <- apply(x, 2, function(x) min(x, na.rm = TRUE))
+   x <- t(t(x) - xmin + 1)
+   xfreq <- apply(x, 2, tabulate, nbins = nvalues)
+   n.obs <- colSums(xfreq)
+   xfreq <- t(t(xfreq)/n.obs)
+   tau <- qnorm(apply(xfreq, 2, cumsum))[1:(nvalues - 1), ]
+   if (!is.matrix(tau)) 
+       tau <- matrix(tau, ncol = nvar)
+   rownames(tau) <- names(xt)[1:(nvalues - 1)]
+   colnames(tau) <- colnames(x)
+   mat <- matrix(0, nvar, nvar)
+   colnames(mat) <- rownames(mat) <- colnames(x)
+   x <- x - min(x, na.rm = TRUE) + 1
+   #foreach(i=2:nvar) %dopar% {
+   for (i in 2:nvar) {
+       if (progress) 
+           progressBar(i^2/2, nvar^2/2, "Polychoric")
+       for (j in 1:(i - 1)) {
+             if (t(!is.na(x[, i])) %*% (!is.na(x[, j])) > 2) {
+       	        if (!polycor) {
+       	          poly <- polyc(x[, i], x[, j], tau[, i], tau[, 
+       	            j], global = global)
+       	          mat[i, j] <- mat[j, i] <- poly$rho
+       	        }
+       	        else {
+       	          poly <- polychor(x[, i], x[, j], ML = ML, std.err = std.err)
+       	          mat[i, j] <- mat[j, i] <- poly
+       	        }
+       	    }
+       	    else {
+       	        mat[i, j] <- mat[j, i] <- NA
+       	    }
+       	}
+       }
+   diag(mat) <- 1
+   if (any(is.na(mat))) {
+       warning("some correlations are missing, smoothing turned off")
+       smooth <- FALSE
+   }
+   if (smooth) {
+       mat <- cor.smooth(mat)
+   }
+   tau <- t(tau)
+   result <- list(rho = mat, tau = tau, n.obs = nsub, Call = cl)
+   if (progress) {
+       cat("\n")
+       flush(stdout())
+   }
+   class(result) <- c("psych", "poly")
+   return(result)
+}
+
+# Load the hidden psych functions
+polyc <- psych:::polyc
+polyF <- psych:::polyF
+```
+
+Parallel Speed
+-------------
+```{r cache=TRUE,tidy=TRUE,highlight=TRUE}
+system.time(new <- polychoric(x=poly.data$items,progress=FALSE,parallel=TRUE,n.cpu=2))
+```
+
+Parallel Output
+---------------
+```{r cache=TRUE,tidy=TRUE,highlight=TRUE}
+print(new)
+```
+
+
