@@ -59,8 +59,10 @@ sapa.db <- function(database,user,password,ssh.user,all=FALSE) {
   #   all:      Connect to all databases?
   #
   # Returns: RMySQL connection
-  
-  check.location(ssh.user)
+  tunnel <- system(command="pgrep -f 'ssh -fNg -L 3306'",intern=TRUE)
+  if (is.null(tunnel) || length(tunnel) == 0) {
+    check.location(ssh.user)
+  }
   
   # Check packages
   if (!require(RMySQL)) {
