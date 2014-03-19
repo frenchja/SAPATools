@@ -3,12 +3,12 @@
 # Plot SAPA Aspects
 
 plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores, 
-                         by = 'discipline', facet = FALSE){
+                         group = 'discipline', facet = FALSE){
   # This function plots SAPA aspects by discipline or major.
   # TODO:  
   # 1. Facet is broken..
   
-  by <<- by
+  group <<- group
   aspect <<- aspect
   sapa.data[[aspect]] <- scale(sapa.data[[aspect]])
   
@@ -17,7 +17,7 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
     stop('Install ggplot2 package.')
   }
   
-  switch(by,
+  switch(group,
          'discipline'={
            discipline.labels <- c('Undecided','Arts','Business','Communications','Community and Social Services','Computer and Information Sciences',
                              'Cultural and Regional Studies','Education','Engineering and Technology','Language and Literature Studies',
@@ -76,9 +76,9 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
          'job'={
          } )
   
-  sapa.data[[by]] <- factor(as.factor(sapa.data[[by]]), 
-                                 levels=get(paste(by,'.levels',sep='')),
-                                 labels=get(paste(by,'.labels',sep='')))
+  sapa.data[[group]] <- factor(as.factor(sapa.data[[group]]), 
+                                 levels=get(paste(group,'.levels',sep='')),
+                                 labels=get(paste(group,'.labels',sep='')))
   
   if(isTRUE(facet)){
     sapa.data[['discipline']] <- factor(as.factor(sapa.data[['discipline']]),
@@ -135,7 +135,7 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
 #   } 
   else {
     group.data <- summarySE(data = sapa.data, measurevar = aspect, 
-                            groupvars = by, na.rm=TRUE)
+                            groupvars = group, na.rm=TRUE)
   }
   
   # Get rid of majors with NAs
@@ -144,13 +144,13 @@ plot.aspects <- function(aspect = 'Plasticity', sapa.data = IRTscores,
   # Get rid of majors with < 20
   group.data <- subset(x=group.data,subset=group.data$N > 20)
   
-  c <- ggplot(group.data, aes(x = reorder(get(by),get(aspect)), 
+  c <- ggplot(group.data, aes(x = reorder(get(group),get(aspect)), 
                               y = get(aspect)))
   
   sapa.plot <- c + geom_pointrange(aes(ymin=get(aspect)-ci, 
                                        ymax=get(aspect)+ci),size=.8) + 
                 coord_flip() + 
-                xlab(label=paste('Academic',by)) + ylab(label=paste(aspect,'Mean')) + 
+                xlab(label=paste('Academic',group)) + ylab(label=paste(aspect,'Mean')) + 
                 theme_bw(base_size=10) + 
                 geom_hline(aes(yintercept = 0),colour="#BB0000", linetype="dashed")
   
