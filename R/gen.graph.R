@@ -9,7 +9,7 @@ generate.scatter <- function(cor, n.obs = 500, add.text = FALSE, save = FALSE) {
   
   # Generate random correlation if not specified
   if(missing(cor)){
-    cor <- runif(n = 1, min = 0, max = 1)
+    cor <- runif(n = 1, min = -1, max = 1)
   }
   lapply(X = cor,FUN = function(cor, ...){
     # Generate matrix code modified from r-bloggers.com
