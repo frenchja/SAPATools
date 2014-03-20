@@ -6,6 +6,11 @@ generate.scatter <- function(cor, n.obs = 500, add.text = FALSE, save = FALSE) {
   #   add.text = Annotate correlation to graph
   #   save = Save graph as PNG to current directory
   n.obs <- n.obs
+  
+  # Generate random correlation if not specified
+  if(missing(cor)){
+    cor <- runif(n = 1, min = 0, max = 1)
+  }
   lapply(X = cor,FUN = function(cor, ...){
     # Generate matrix code modified from r-bloggers.com
     R = matrix(cbind(1,cor,cor,1),nrow=2)
