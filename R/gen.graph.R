@@ -16,7 +16,6 @@ generate.scatter <- function(cor, n.obs = 500, add.text = FALSE, save = FALSE) {
     R = matrix(cbind(1,cor,cor,1),nrow=2)
     U = t(chol(R))
     nvars = dim(U)[1]
-    set.seed(1)
     random.normal = matrix(rnorm(nvars*n.obs,0,1), nrow=nvars, ncol=n.obs);
     X = U %*% random.normal
     newX = t(X)
