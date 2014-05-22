@@ -1,8 +1,8 @@
 Package: SAPATools
 Type: Package
 Title: A package for use with Synthetic Aperture Personality Assessment.
-Version: 2014.01.16
-Date: 2014-01-16
+Version: 2014.05.22
+Date: 2014-05-22
 Author: Jason A. French with contributions from David M. Condon.
 Maintainer: Jason A. French <jason@sapa-project.org>
 Description: SAPA Tools is a collection of functions design to obtain, scrub, and analyze data from the Synthetic Aperture Personality Assessment, a product of the Telemetrics Lab of Northwestern University.
@@ -12,3 +12,4 @@ Suggests: RMySQL, data.table, foreach, doMC, psych
 BugReports: https://github.com/frenchja/SAPATools/issues
 License: GPL (>= 2)
 URL: https://sapa-project.org/r/
+ByteCompile: TRUE
