@@ -22,17 +22,16 @@ you'll need to enter your current Github username and password.
 ```r
 # install.packages('devtools')
 library(devtools)
-install_github(repo='SAPATools',username='frenchja',
-    auth_user='githubID',password='secret')
+install_github(repo='SAPATools',username='frenchja')
 ```
 
 Using SAPA Tools
 ----------------
-- Check out our [wiki](https://github.com/frenchja/SAPATools/wiki).
+- Check out our [wiki](https://github.com/frenchja/SAPATools/wiki) for the latest tutorials.
 
 Features
 --------
-- Download SAPA data directly from MySQL or HTML scraping.
+- Download SAPA data directly from MySQL or HTML scraping. MySQL is much faster than HTML scraping and preserves the data type, rather than needing to reset `data.frame$date` using `as.Date()` each time...
 - Scrub SAPA data of duplicate participants.
 - Calculate temperament, ability, and interest norms by age and gender (added by [David M. Condon](https://sapa-project.org/dmc/)).
 - SSH tunneling (if not used from SAPA server) using `check.location()`.
