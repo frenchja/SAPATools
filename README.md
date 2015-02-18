@@ -10,7 +10,7 @@ The latest stable release may be downloaded from the
 [SAPA Project](https://sapa-project.org):
 
 ```r
-install.packages('SAPATools',repos='http://sapa-project.org/r/',type='source')
+install.packages('SAPATools', repos = 'http://sapa-project.org/r/', type = 'source')
 ```
 
 If you like playing with updated, bleeding-edge code, you can use 
