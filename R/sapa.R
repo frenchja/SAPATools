@@ -23,13 +23,13 @@ check.location <- function(ssh.user, ssh.pass, vpn.check = TRUE, ssh.tunnel = TR
   
   # Check hostname and location
   hostname <- system('hostname', intern=TRUE)
+  user <- Sys.info()['user']
   # Switching is faster than nested ifs
   switch(hostname,
          revelle.ci.northwestern.edu={
            return(TRUE)
          },
          hardin={
-           user <- Sys.info()['user']
            cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
                         user, '@revelle.ci.northwestern.edu',
                         sep='')
