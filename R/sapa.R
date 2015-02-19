@@ -3,11 +3,16 @@
 # Email:    frenchja@u.northwestern.edu
 # SAPA Tools:     https://sapa-project.org/r/
 
-check.location <- function(ssh.user){
+check.location <- function(ssh.user, ssh.pass, vpn.check = TRUE, ssh.tunnel = TRUE){
   # Establishes connect to SAPA MySQL database
   #
   # Args:
-  #   ssh.user: String of username for SSH tunnel.
+  #   ssh.user:   String of username for SSH tunnel.
+  #   ssh.pass:   String of ssh password if user is too lazy 
+  #               to setup ssh-copy-id.
+  #   vpn.check:  Set FALSE to avoid VPN check.
+  #   ssh.tunnel: Set TRUE to force ssh tunnel (for scripting)
+  #
   # Returns:
   #   TRUE if SSH tunnel is established when needed
   
@@ -35,13 +40,24 @@ check.location <- function(ssh.user){
          # SSH Tunnel if hostname does not match
          {
            warning('This script is meant be run from the SAPA Project or Hardin server!')
-           # TODO:  Add ssh.tunnel check using lsof
            
-           # Prompt for SSH Tunnel
-           if(menu(choices = c('Yes', 'No'), title='Do you want to try tunneling over SSH?') == 2){
-             stop('You\'ve chosen not to initiate an SSH tunnel.  Please login and load library(SAPATools) manually.')
+           # Check for NU VPN connection
+           if(vpn.check){
+             if(!grepl(pattern = "*.vpn.northwestern.edu$",
+                       x = system('hostname', intern=TRUE))){
+               stop('VPN connection to Northwestern not detected.
+Please see http://www.it.northwestern.edu/oncampus/vpn/
+If you\'re certain you\'re connected, set the vpn.check = FALSE argument.')
+             }
            }
-             
+           
+           # Prompt for SSH Tunnel if ssh.tunnel = FALSE
+           if(!hasArg(ssh.tunnel)){
+             if(menu(choices = c('Yes', 'No'), title='Do you want to try tunneling over SSH?') == 2){
+               stop('You\'ve chosen to not initiate an SSH tunnel.  Please login to SAPA and load library(SAPATools) manually.')
+             }
+           }
+           
            if(!hasArg(ssh.user)){
              choice <- menu(choices = c(paste('Use', user), "Let me change my SSH name."),
                             title = paste("You didn't specify an ssh.user argument.  Do you want to try with ", user, "?", sep = ""))
@@ -49,12 +65,21 @@ check.location <- function(ssh.user){
                user <- readline(prompt = "Please enter an ssh.user: ")
              }         
            }
+           
            # Detect ssh binary
            if(nchar(Sys.which('ssh')) > 0) {
              # Give user tunneling command if ssh-copy-id not used
-             ssh.command <- paste("Type the following into a new Terminal tab:\n ssh -fNg -L 3306:127.0.0.1:3306 ", user, "@revelle.ci.northwestern.edu", sep="")
-             message(ssh.command)
-             readline(prompt='Press [Enter] when you\'ve established the SSH Tunnel.')
+             # ssh.command <- paste("Type the following into a new Terminal tab:\n ssh -fNg -L 3306:127.0.0.1:3306 ", user, "@revelle.ci.northwestern.edu", sep="")
+             # message(ssh.command)
+             # readline(prompt='Press [Enter] when you\'ve established the SSH Tunnel.')
+             ssh.command <- paste("ssh -fNg -L 3306:127.0.0.1:3306 ", user, "@revelle.ci.northwestern.edu", sep = "")
+             if(hasArg(ssh.pass)){
+               system(command = ssh.command, input = ssh.pass)
+             } else {
+               system(command = ssh.command)
+             }
+             
+             # Track SSH process ID
              ssh.id <- system('lsof -t -i :3306 -i@revelle.ci.northwestern.edu', intern = TRUE)
              return(TRUE)
            } else {
