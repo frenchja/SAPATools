@@ -1,11 +1,24 @@
 #!/usr/bin/env Rscript
-# Author:   Jason A. French & David M. Condon
+# Authors:   Jason A. French & David M. Condon
 # Email:    frenchja@u.northwestern.edu
 # SAPA Tools:     https://sapa-project.org/r/
 
 check.location <- function(ssh.user){
+  # Establishes connect to SAPA MySQL database
+  #
+  # Args:
+  #   ssh.user: String of username for SSH tunnel.
+  # Returns:
+  #   TRUE if SSH tunnel is established when needed
+  
+  # Windows check
+  if(Sys.info()['sysname'] == 'Windows'){
+    stop('Sorry!  Windows doesn\'t do SSH tunneling!')
+  }
+  
   # Check hostname and location
   hostname <- system('hostname', intern=TRUE)
+  # Switching is faster than nested ifs
   switch(hostname,
          revelle.ci.northwestern.edu={
            return(TRUE)
@@ -13,50 +26,61 @@ check.location <- function(ssh.user){
          hardin={
            user <- Sys.info()['user']
            cmd <- paste('ssh -fNg -L 3306:127.0.0.1:3306 ',
-                        user,'@revelle.ci.northwestern.edu',
+                        user, '@revelle.ci.northwestern.edu',
                         sep='')
            system(cmd) # wait=TRUE?
+           ssh.id <- system('lsof -t -i :3306 -i@revelle.ci.northwestern.edu', intern = TRUE)
            return(TRUE)
          },
-         # switch() if not hardin or revelle.ci.northwestern.edu
+         # SSH Tunnel if hostname does not match
          {
-         warning('This script is meant be run from the SAPA Project or Hardin server!')
-         switch(Sys.info()['sysname'],
-                Windows={
-                  stop('Sorry!  Windows doesn\'t do SSH tunneling!')},
-# switch if OS not Windows
-{
-  # Prompt for SSH Tunnel
-  if(!hasArg(ssh.user)){
-    choice <- menu(choices=c('Yes','No'),
-                   title='Do you want to try tunneling over SSH?')
-  }
-  else{
-    choice <- 1
-  }
-  
-  if(choice == 1 & nchar(Sys.which('ssh')) > 0) {
-    message('Type the following into Terminal:\n ssh -fNg -L 3306:127.0.0.1:3306 NetID@revelle.ci.northwestern.edu\n')
-    readline(prompt='Press [Enter] when you\'ve established the SSH Tunnel.')
-    return(TRUE)
-  }
-  else {
-    stop('Cannot proceed! Either run this script from the server or tunnel using SSH!')
-  }
-})})
-  # Kill SSH Tunnel on.exit()
-  on.exit(system('pkill ssh'))
+           warning('This script is meant be run from the SAPA Project or Hardin server!')
+           # TODO:  Add ssh.tunnel check using lsof
+           
+           # Prompt for SSH Tunnel
+           if(menu(choices = c('Yes', 'No'), title='Do you want to try tunneling over SSH?') == 2){
+             stop('You\'ve chosen not to initiate an SSH tunnel.  Please login and load library(SAPATools) manually.')
+           }
+             
+           if(!hasArg(ssh.user)){
+             choice <- menu(choices = c(paste('Use', user), "Let me change my SSH name."),
+                            title = paste("You didn't specify an ssh.user argument.  Do you want to try with ", user, "?", sep = ""))
+             if(choice == 2){
+               user <- readline(prompt = "Please enter an ssh.user: ")
+             }         
+           }
+           # Detect ssh binary
+           if(nchar(Sys.which('ssh')) > 0) {
+             # Give user tunneling command if ssh-copy-id not used
+             ssh.command <- paste("Type the following into a new Terminal tab:\n ssh -fNg -L 3306:127.0.0.1:3306 ", user, "@revelle.ci.northwestern.edu", sep="")
+             message(ssh.command)
+             readline(prompt='Press [Enter] when you\'ve established the SSH Tunnel.')
+             ssh.id <- system('lsof -t -i :3306 -i@revelle.ci.northwestern.edu', intern = TRUE)
+             return(TRUE)
+           } else {
+             stop('Cannot proceed! I didn\'t detect SSH on your system!')
+           }}
+         )
 }
 
-sapa.db <- function(database,user,password,ssh.user,all=FALSE) {
+kill.tunnel <- function(){
+  # Function to terminal SSH tunnel at the end of your scripts.
+  #
+  # TODO:  Fix lsof exit status
+  ssh.id <- as.integer(system('lsof -t -i :3306 -i@revelle.ci.northwestern.edu', intern = TRUE))
+  tools::pskill(ssh.id)
+}
+
+}
+
+sapa.db <- function(database, user, password, ssh.user, all=FALSE) {
   # Establishes connect to SAPA MySQL database
   #
   # Args:
   #   database: Database to connect
   #   user:     MySQL SAPA username
   #   password: MySQL SAPA password
-  #   ssh.user: SSH NetID
-  #   all:      Connect to all databases?
+  #   ssh.user: SSH NetID, passed to check.location()
   #
   # Returns: RMySQL connection
   tunnel <- system(command="pgrep -f 'ssh -fNg -L 3306'",intern=TRUE)
@@ -108,7 +132,7 @@ sapa.db <- function(database,user,password,ssh.user,all=FALSE) {
   return(con)
 }
 
-get.sapa <- function(table.name,con,filename,write=FALSE,user,password) {
+get.sapa <- function(table.name, con, filename, write = FALSE, user, password) {
   # Imports a SAPA table from MySQL into R
   #
   # Args:
@@ -125,7 +149,7 @@ get.sapa <- function(table.name,con,filename,write=FALSE,user,password) {
   if (!hasArg(con)) {
     message('RMySQL connection not specified. Calling sapa.db() for you.')
     # Could use dbListConnections(MySQL())
-    con <- sapa.db(user=user,password=password)
+    con <- sapa.db(user = user, password = password)
   }
   
   # Check if table argument passed
