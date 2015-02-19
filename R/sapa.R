@@ -52,7 +52,7 @@ If you\'re certain you\'re connected, set the vpn.check = FALSE argument.')
            }
            
            # Prompt for SSH Tunnel if ssh.tunnel = FALSE
-           if(!hasArg(ssh.tunnel)){
+           if(!isTRUE(ssh.tunnel)){
              if(menu(choices = c('Yes', 'No'), title='Do you want to try tunneling over SSH?') == 2){
                stop('You\'ve chosen to not initiate an SSH tunnel.  Please login to SAPA and load library(SAPATools) manually.')
              }
