@@ -22,7 +22,7 @@ you'll need to enter your current Github username and password.
 ```r
 # install.packages('devtools')
 library(devtools)
-install_github(repo = 'SAPATools', username = 'frenchja')
+install_github(repo = 'frenchja/SAPATools')
 ```
 
 Using SAPA Tools

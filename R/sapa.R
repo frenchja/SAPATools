@@ -71,8 +71,6 @@ kill.tunnel <- function(){
   tools::pskill(ssh.id)
 }
 
-}
-
 sapa.db <- function(database, user, password, ssh.user, all=FALSE) {
   # Establishes connect to SAPA MySQL database
   #
